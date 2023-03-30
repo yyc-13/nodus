@@ -1,5 +1,5 @@
 import Form from "../components/form";
-export default function Uploda() {
+export default function Upload() {
   return (
     <>
       <Form></Form>

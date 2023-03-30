@@ -1,24 +1,24 @@
 import Head from "next/head";
 import { PrismaClient } from "@prisma/client";
-import ArtCard from "@/components/artCard";
-import ArtForm from "@/components/artForm";
-const prisma = new PrismaClient();
+// import ArtCard from "@/components/artCard";
+// import ArtForm from "@/components/artForm";
+// const prisma = new PrismaClient();
 
-export async function getServerSideProps() {
-  const post = await prisma.post.findMany();
-  const video = await prisma.video.findMany();
-  const art = await prisma.art.findMany();
-  const audio = await prisma.audio.findMany();
-  return {
-    props: {
-      // we have to stringify and then parse the data to pass thru date
-      post: JSON.parse(JSON.stringify(post)),
-      video: JSON.parse(JSON.stringify(video)),
-      art: JSON.parse(JSON.stringify(art)),
-      audio: JSON.parse(JSON.stringify(audio)),
-    },
-  };
-}
+// export async function getServerSideProps() {
+//   const post = await prisma.post.findMany();
+//   const video = await prisma.video.findMany();
+//   const art = await prisma.art.findMany();
+//   const audio = await prisma.audio.findMany();
+//   return {
+//     props: {
+//       // we have to stringify and then parse the data to pass thru date
+//       post: JSON.parse(JSON.stringify(post)),
+//       video: JSON.parse(JSON.stringify(video)),
+//       art: JSON.parse(JSON.stringify(art)),
+//       audio: JSON.parse(JSON.stringify(audio)),
+//     },
+//   };
+// }
 
 export default function Home({ post = [], video = [], art, audio = [] }: any) {
   return (
@@ -33,8 +33,9 @@ export default function Home({ post = [], video = [], art, audio = [] }: any) {
         <div>
           {/* <PostCard post={post} />
           <VideoCard video={video} /> */}
-          <ArtCard art={art[0]} />
-          <ArtForm />
+          {/* <ArtCard art={art[0]} />
+          <ArtForm /> */}
+          index page
           {/* <AudioCard audio={audio} /> */}
         </div>
       </main>
