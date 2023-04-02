@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Toaster } from "react-hot-toast";
-import { SessionProvider as AuthProvider } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 
 export default function App({
   Component,
@@ -9,10 +9,10 @@ export default function App({
 }: AppProps) {
   return (
     <>
-      <AuthProvider session={session}>
+      <SessionProvider session={session}>
         <Component {...pageProps} />
         <Toaster />
-      </AuthProvider>
+      </SessionProvider>
     </>
   );
 }

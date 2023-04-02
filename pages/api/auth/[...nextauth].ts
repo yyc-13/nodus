@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
@@ -11,7 +11,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 // All requests to /api/auth/* (signIn, callback, signOut, etc.) will automatically be handled by NextAuth.js.
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -66,4 +66,6 @@ export default NextAuth({
   //     return true; // Do different verification for other providers that don't have `email_verified`
   //   },
   // },
-});
+};
+
+export default NextAuth(authOptions);

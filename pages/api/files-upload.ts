@@ -21,6 +21,7 @@ function getFileExtension(mimetype: string): string {
     "text/plain": ".txt",
     "video/mp4": ".mp4",
     "audio/mpeg": ".mp3",
+    "video/quicktime": ".mov",
     // Add more mappings as needed
   };
 

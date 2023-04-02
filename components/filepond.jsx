@@ -15,17 +15,17 @@ registerPlugin(
   FilePondPluginFileValidateType
 );
 
-export default function Filepond({ fileState }) {
+export default function Filepond({ fileState, id }) {
   const [files, setFiles] = fileState;
-  const handleUPdataFiles = (fileItems) => {
-    setFiles(fileItems.map((fileItem) => fileItem.file));
+  const handleUpdateFiles = (fileObjs) => {
+    setFiles(fileObjs.map((fileObj) => fileObj.file));
   };
 
   return (
     <FilePond
-      id="filepond"
+      id={id}
       files={files}
-      onupdatefiles={handleUPdataFiles}
+      onupdatefiles={handleUpdateFiles}
       allowMultiple={true}
       maxFiles={3}
       // server="/api/filepond"

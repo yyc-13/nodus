@@ -3,7 +3,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Filepond from "./filepond";
 import { useState } from "react";
-import axios from "axios";
+import { useSession } from "next-auth/react";
+
+const uploadFiles = async (files) => {
+  const formData = new FormData();
+  files.forEach((file, index) => {
+    formData.append(`files_${index}`, file);
+  });
+  formData.append("fileType", "data.type");
+
+  const res = await fetch("/api/files-upload", {
+    method: "POST",
+    body: formData,
+  });
+  return res.json();
+};
 
 const schema = yup
   .object({
@@ -29,31 +43,23 @@ export default function Form() {
     formState: { errors },
     setValue,
   } = useForm<formData>({ resolver: yupResolver(schema) });
-  const [files, setFiles] = useState([]);
 
-  const uploadFiles = async () => {
-    const formData = new FormData();
-    files.forEach((file, index) => {
-      formData.append(`files_${index}`, file);
-    });
-    formData.append("fileType", "data.type");
+  const [prodFiles, setProdFiles] = useState([]);
+  const [previewFiles, setPreviewFiles] = useState([]);
+  const { data: session } = useSession();
 
-    const res = await fetch("/api/uploadfiles", {
-      method: "POST",
-      body: formData,
-    });
-    return res.json();
-  };
-
-  // On Submit
   const onSubmit = async (data: any) => {
     try {
-      const fileUploadRes = await uploadFiles();
+      const { fileUrls: prodUrls } = await uploadFiles(prodFiles);
+      const { fileUrls: previewUrls } = await uploadFiles(previewFiles);
+      console.log("fileUrls", prodUrls);
+      console.log("previewUrls", previewUrls);
+      data.prodUrls = prodUrls;
+      data.previewUrls = previewUrls;
+      data.email = session?.user?.email;
 
-      data.urls = fileUploadRes.fileUrls;
-      console.log("data.urls", data.urls);
-      console.log("fileUploadRes", fileUploadRes.fileUrls);
       const formData = new FormData();
+      // { formData.append }
       for (const key in data) {
         if (Array.isArray(data[key])) {
           data[key].forEach((value: string) => {
@@ -64,12 +70,10 @@ export default function Form() {
         formData.append(key, data[key]);
       }
 
-      console.log("formData", formData);
-      const formUploadRes = await fetch("/api/productform", {
+      await fetch("/api/product/create", {
         method: "POST",
         body: formData,
       });
-      console.log("formUploadRes", formUploadRes);
     } catch (err) {
       console.error(err);
     }
@@ -175,12 +179,26 @@ export default function Form() {
               </div>
 
               <label
-                htmlFor="filepond"
+                htmlFor="prodFiles"
                 className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
               >
-                Upload your file(s)
+                Upload file(s)
               </label>
-              <Filepond fileState={[files, setFiles]}></Filepond>
+              <Filepond
+                id="prodFiles"
+                fileState={[prodFiles, setProdFiles]}
+              ></Filepond>
+
+              <label
+                htmlFor="previewFiles"
+                className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+              >
+                Upload file(s) for preview
+              </label>
+              <Filepond
+                id="previewFiles"
+                fileState={[previewFiles, setPreviewFiles]}
+              ></Filepond>
               <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
                 <label
                   htmlFor="price"
@@ -199,7 +217,7 @@ export default function Form() {
                       id="price"
                       autoComplete="price"
                       className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
+                    ></input>
                   </div>
 
                   {errors.price?.message && (
