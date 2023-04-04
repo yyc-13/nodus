@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { GetStaticProps, GetStaticPaths } from "next";
-import ProductWithImage from "@/components/productA";
+import ProductWithImage from "@/components/product/card-lg";
 import prisma from "@/lib/prismaClient";
 
 export const getStaticPaths: GetStaticPaths = async () => {
