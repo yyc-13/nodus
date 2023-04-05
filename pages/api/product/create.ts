@@ -32,6 +32,7 @@ export default async function handler(
         return;
       }
       console.log("fields", fields);
+      console.log("file info", fields.prodFileInfos, fields.previewFileInfos);
 
       const {
         type,
@@ -45,17 +46,31 @@ export default async function handler(
 
       const prodUrls = unprocessedProdUrls.split(",");
       const previewUrls = unprocessedPreviewUrls.split(",");
+
+      let prodFileInfos = [];
+      let previewFileInfos = [];
+      for (let i = 0; i < prodUrls.length; i++) {
+        const prodFileInfo = fields[`prodFileInfo[${i}]`];
+        prodFileInfos.push(JSON.parse(prodFileInfo));
+      }
+      for (let i = 0; i < previewUrls.length; i++) {
+        const previewFileInfo = fields[`previewFileInfo[${i}]`];
+        previewFileInfos.push(JSON.parse(previewFileInfo));
+      }
+      console.log(prodFileInfos, previewFileInfos);
+
       const user = await getUser(email);
       console.log("user", user);
       const sellerId = user!.id;
+
       const product = await createProduct(
         title,
-        prodUrls,
-        previewUrls,
         description,
         parseInt(price),
         type,
-        sellerId
+        sellerId,
+        prodFileInfos,
+        previewFileInfos
       );
       console.log("product", product);
       res.status(200).json(product);

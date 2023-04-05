@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
-import Form from "../components/form";
+import Form from "../../components/form";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
+import { authOptions } from "../api/auth/[...nextauth]";
 export default function Upload() {
   return (
     <>

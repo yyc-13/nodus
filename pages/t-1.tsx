@@ -1,30 +1,58 @@
-import { GetServerSideProps } from "next";
-import Form from "../components/form";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
-export default function Upload() {
-  return (
-    <>
-      <Form></Form>
-    </>
-  );
-}
+import { useState } from "react";
 
-export async function getServerSideProps(context: any) {
-  console.log("This log message will be printed to the server console.");
-  const session = await getServerSession(context.req, context.res, authOptions);
-  console.log(session);
+export default function DynamicForm() {
+  const [formData, setFormData] = useState([{ name: "", description: "" }]);
 
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
+  const handleInputChange = (event, index) => {
+    const { name, value } = event.target;
+    const formFields = [...formData];
+    formFields[index][name] = value;
+    setFormData(formFields);
   };
+
+  const handleAddFields = () => {
+    const formFields = [...formData, { name: "", description: "" }];
+    setFormData(formFields);
+  };
+
+  const handleRemoveFields = (index) => {
+    const formFields = [...formData];
+    formFields.splice(index, 1);
+    setFormData(formFields);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {formData.map((formField, index) => (
+        <div key={`${formField}-${index}`}>
+          <input
+            type="text"
+            name="name"
+            value={formField.name}
+            onChange={(event) => handleInputChange(event, index)}
+            placeholder="Enter a name for this field"
+          />
+          <input
+            type="text"
+            name="description"
+            value={formField.description}
+            onChange={(event) => handleInputChange(event, index)}
+            placeholder="Enter a description for this field"
+          />
+          <button type="button" onClick={() => handleRemoveFields(index)}>
+            Remove Field
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={() => handleAddFields()}>
+        Add Field
+      </button>
+      <button type="submit">Submit</button>
+    </form>
+  );
 }

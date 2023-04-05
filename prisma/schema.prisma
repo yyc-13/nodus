@@ -14,8 +14,6 @@ datasource db {
 model Product {
   id          String   @id @default(cuid())
   title       String
-  // prodUrls         String[]
-  // previewUrls     String[]
   description String
   price       Int
   type        String
@@ -24,11 +22,11 @@ model Product {
   seller      User     @relation(fields: [sellerId], references: [id])
   sellerId    String
   purchases   Purchase[]
-   prodUrls    ProdUrl[]   
+  prodUrls    ProdUrl[]   
   previewUrls PreviewUrl[] 
-    reviews       Review[]
+  reviews     Review[]
   questions   Question[]
-    favorites   Favorite[]
+  favorites   Favorite[]
 }
 
 model ProdUrl {

@@ -51,24 +51,24 @@ export async function getUser(email: string) {
 
 export async function createProduct(
   title: string,
-  urls: string[],
-  preview: string[],
   description: string,
   price: number,
   type: string,
-  sellerId: string
+  sellerId: string,
+  prodFileInfos: any[],
+  previewFileInfos: any[]
 ) {
   const product = await prisma.product.create({
     data: {
-      title,
+      title: title,
+      description: description,
+      price: price,
+      type: type,
+      sellerId: sellerId,
       prodUrls: {
-        set: urls,
+        create: prodFileInfos,
       },
-      previewUrls: { set: preview },
-      description,
-      type,
-      price,
-      sellerId,
+      previewUrls: { create: previewFileInfos },
     },
   });
   return product;

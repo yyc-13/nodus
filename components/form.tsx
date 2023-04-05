@@ -41,11 +41,12 @@ export default function Form() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<formData>({ resolver: yupResolver(schema) });
 
   const [prodFiles, setProdFiles] = useState([]);
   const [previewFiles, setPreviewFiles] = useState([]);
+  // const [prodFileInfos, setProdFileInfos] = useState([]);
+  // const [previewFileInfos, setPreviewFileInfos] = useState([]);
   const { data: session } = useSession();
 
   const onSubmit = async (data: any) => {
@@ -54,6 +55,35 @@ export default function Form() {
       const { fileUrls: previewUrls } = await uploadFiles(previewFiles);
       console.log("fileUrls", prodUrls);
       console.log("previewUrls", previewUrls);
+
+      const prodFileInfos = prodFiles.map((file, index) => {
+        const description =
+          document.getElementById(`prod-file-description-` + index)?.value ||
+          "";
+        const name =
+          document.getElementById(`prod-file-name-` + index)?.value || "";
+        return { title: name, description: description, url: prodUrls[index] };
+      });
+
+      console.log("prodFileInfos,", prodFileInfos);
+
+      const previewFileInfos = previewFiles.map((file, index) => {
+        const description = document.getElementById(
+          `preview-file-description-` + index
+        )?.value;
+        const name = document.getElementById(
+          `preview-file-name-` + index
+        )?.value;
+        return {
+          title: name,
+          description: description,
+          url: previewUrls[index],
+        };
+      });
+      console.log("previewFileInfos,", previewFileInfos);
+
+      data.prodFileInfos = prodFileInfos;
+      data.previewFileInfos = previewFileInfos;
       data.prodUrls = prodUrls;
       data.previewUrls = previewUrls;
       data.email = session?.user?.email;
@@ -69,6 +99,12 @@ export default function Form() {
         }
         formData.append(key, data[key]);
       }
+      prodFileInfos.forEach((fileInfo, index) => {
+        formData.append(`prodFileInfo[${index}]`, JSON.stringify(fileInfo));
+      });
+      previewFileInfos.forEach((fileInfo, index) => {
+        formData.append(`previewFileInfo[${index}]`, JSON.stringify(fileInfo));
+      });
 
       await fetch("/api/product/create", {
         method: "POST",
@@ -85,11 +121,11 @@ export default function Form() {
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-8 divide-y divide-gray-200"
       >
-        <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+        <div className="space-y-8 divide-y  divide-gray-200 sm:space-y-5">
           <div className="space-y-6 sm:space-y-5">
             <div>
               <h3 className="text-base font-semibold leading-6 text-gray-900">
-                Upload you digital work.
+                Upload you content.
               </h3>
             </div>
 
@@ -187,6 +223,7 @@ export default function Form() {
               <Filepond
                 id="prodFiles"
                 fileState={[prodFiles, setProdFiles]}
+                type="prod"
               ></Filepond>
 
               <label
@@ -198,6 +235,7 @@ export default function Form() {
               <Filepond
                 id="previewFiles"
                 fileState={[previewFiles, setPreviewFiles]}
+                type="preview"
               ></Filepond>
               <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
                 <label
