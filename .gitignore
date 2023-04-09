@@ -37,3 +37,6 @@ next-env.d.ts
 
 # dev journal
 nodus_dev_journal.md
+
+# test files 
+t-.*
