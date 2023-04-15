@@ -1,161 +1,32 @@
 import { useInView } from "react-intersection-observer";
-
+import Image from "next/image";
 export default function App() {
-  const { ref, inView, entry } = useInView({
-    /* Optional options */
-    threshold: 0,
-  });
-  console.log("inview", inView);
-
   return (
-    <>
-      <div ref={ref}>
-        <h2>{`Header inside viewport ${inView}.`}</h2>
+    <nav
+      className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+      aria-label="Pagination"
+    >
+      <div className="hidden sm:block">
+        <p className="text-sm text-gray-700">
+          Showing <span className="font-medium">1</span> to{" "}
+          <span className="font-medium">10</span> of{" "}
+          <span className="font-medium">20</span> results
+        </p>
       </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
+      <div className="flex flex-1 justify-between sm:justify-end">
+        <a
+          href="#"
+          className="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0"
+        >
+          Previous
+        </a>
+        <a
+          href="#"
+          className="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0"
+        >
+          Next
+        </a>
       </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-      <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore facilis
-        nesciunt rerum assumenda voluptatum perspiciatis at unde excepturi,
-        architecto magni molestias tempora eaque in odit sunt optio? Soluta,
-        facilis iste?
-      </div>
-    </>
+    </nav>
   );
 }

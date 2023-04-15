@@ -1,9 +1,9 @@
-// import ProductA from "@/components/productA";
+import ProductA from "@/components/productA";
 
 export default function Product() {
   return (
     <>
-      {/* <ProductA {product}/> */}
+      <ProductA {product}/>
       test
     </>
   );

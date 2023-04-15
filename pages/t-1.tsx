@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CardSm from "@/components/product/card-sm";
+import CardSm from "@/components/product/card";
 const posts = [
   {
     id: 1,

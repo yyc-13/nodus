@@ -125,130 +125,124 @@ export default function ProductA() {
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        {/* product main */}
         <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
-          {/* Image gallery */}
-          <div>
-            {" "}
-            <a
-              href="#"
-              className={`flex items-center text-blue-600 hover:text-blue-800 `}
-            >
-              {/* Files */}
-
-              <div className="mx-auto max-w-lg">
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-                  Zip Tote Basket
-                </h1>
-                <h2 className="text-base font-semibold leading-6 text-gray-900">
-                  Preview Files
-                </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Here are some files you can download to preview the product.
-                </p>
-                <ul
-                  role="list"
-                  className="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200"
-                >
-                  {items.map((item, itemIdx) => (
-                    <li key={itemIdx}>
-                      <div className="group relative flex items-start space-x-3 py-4">
-                        <div className="flex-shrink-0">
-                          <span
-                            className={classNames(
-                              item.iconColor,
-                              "inline-flex h-10 w-10 items-center justify-center rounded-lg"
-                            )}
-                          >
-                            <item.icon
-                              className="h-6 w-6 text-white"
-                              aria-hidden="true"
-                            />
-                          </span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium text-gray-900">
-                            <a href={item.href}>
-                              <span
-                                className="absolute inset-0"
-                                aria-hidden="true"
-                              />
-                              {item.name}
-                            </a>
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {item.description}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0 self-center">
-                          <ChevronRightIcon
-                            className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+          {/* Files */}
+          <div className={`flex items-center `}>
+            <div className="mx-auto max-w-lg">
+              <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+                Zip Tote Basket
+              </h1>
+              <h2 className="text-base font-semibold leading-6 text-gray-900">
+                Preview Files
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Here are some files you can download to preview the product.
+              </p>
+              <ul
+                role="list"
+                className="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200"
+              >
+                {items.map((item, itemIdx) => (
+                  <li key={itemIdx}>
+                    <div className="group relative flex items-start space-x-3 py-4">
+                      <div className="flex-shrink-0">
+                        <span
+                          className={classNames(
+                            item.iconColor,
+                            "inline-flex h-10 w-10 items-center justify-center rounded-lg"
+                          )}
+                        >
+                          <item.icon
+                            className="h-6 w-6 text-white"
                             aria-hidden="true"
                           />
-                        </div>
+                        </span>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-                <h2 className="text-base font-semibold leading-6 text-gray-900">
-                  Files
-                </h2>
-                <p className="mt-1 text-sm text-gray-500"></p>
-                <ul
-                  role="list"
-                  className="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200"
-                >
-                  {items.map((item, itemIdx) => (
-                    <li key={itemIdx}>
-                      <div className="group relative flex items-start space-x-3 py-4">
-                        <div className="flex-shrink-0">
-                          <span
-                            className={classNames(
-                              item.iconColor,
-                              "inline-flex h-10 w-10 items-center justify-center rounded-lg"
-                            )}
-                          >
-                            <item.icon
-                              className="h-6 w-6 text-white"
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-gray-900">
+                          <a href={item.href}>
+                            <span
+                              className="absolute inset-0"
                               aria-hidden="true"
                             />
-                          </span>
+                            {item.name}
+                          </a>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium text-gray-900">
-                            <a href={item.href}>
-                              <span
-                                className="absolute inset-0"
-                                aria-hidden="true"
-                              />
-                              {item.name}
-                            </a>
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {item.description}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0 self-center">
-                          <ChevronRightIcon
-                            className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                        <p className="text-sm text-gray-500">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 self-center">
+                        <ChevronRightIcon
+                          className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <h2 className="text-base font-semibold leading-6 text-gray-900">
+                Files
+              </h2>
+              <p className="mt-1 text-sm text-gray-500"></p>
+              <ul
+                role="list"
+                className="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200"
+              >
+                {items.map((item, itemIdx) => (
+                  <li key={itemIdx}>
+                    <div className="group relative flex items-start space-x-3 py-4">
+                      <div className="flex-shrink-0">
+                        <span
+                          className={classNames(
+                            item.iconColor,
+                            "inline-flex h-10 w-10 items-center justify-center rounded-lg"
+                          )}
+                        >
+                          <item.icon
+                            className="h-6 w-6 text-white"
                             aria-hidden="true"
                           />
-                        </div>
+                        </span>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 flex">
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Or start from an empty project
-                    <span aria-hidden="true"> &rarr;</span>
-                  </a>
-                </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-gray-900">
+                          <a href={item.href}>
+                            <span
+                              className="absolute inset-0"
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </a>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 self-center">
+                        <ChevronRightIcon
+                          className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-6 flex">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  Or start from an empty project
+                  <span aria-hidden="true"> &rarr;</span>
+                </a>
               </div>
-            </a>
+            </div>
           </div>
+
           {/* Product info */}
           <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">

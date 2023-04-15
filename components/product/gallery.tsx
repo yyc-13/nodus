@@ -1,7 +1,7 @@
 import useSWRInfinite from "swr/infinite";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect } from "react";
-import CardSm from "./card-sm";
+import CardSm from "./card";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 const PAGE_SIZE = 6;
@@ -38,14 +38,12 @@ export default function Gallery({ type }: { type: string }) {
             {type}
           </h2>
         </div>
-        <div className="overflow-x-scroll   grid-rows-2 grid-flow-col  mx-auto mt-10 grid max-w-2xl  gap-x-8 gap-y-16 border-t border-gray-200 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none shrink-0">
+        <div className="overflow-x-scroll   grid-rows-2 grid-flow-col  mx-auto grid max-w-2xl  gap-x-8 gap-y-16 border-t border-gray-200 mt-1 pt-3  lg:mx-0 lg:max-w-none shrink-0">
           {products.map((product, index) => (
             <CardSm product={product} key={index} />
           ))}
           {!isReachingEnd && (
-            <div ref={ref} className=" inline-block w-3">
-              load more...
-            </div>
+            <div ref={ref} className=" inline-block w-3"></div>
           )}
         </div>
       </div>

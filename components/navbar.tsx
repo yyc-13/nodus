@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -19,7 +20,7 @@ export default function Navbar() {
           <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
             <div className="flex h-16 justify-between">
               <div className="flex px-2 lg:px-0">
-                <div className="flex flex-shrink-0 items-center">
+                <Link href="/" className="flex flex-shrink-0 items-center">
                   <img
                     className="block h-8 w-auto lg:hidden"
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -30,7 +31,7 @@ export default function Navbar() {
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                     alt="Your Company"
                   />
-                </div>
+                </Link>
                 <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
                   {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                   <a

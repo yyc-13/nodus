@@ -1,7 +1,7 @@
 import Head from "next/head";
 import useSWRInfinite from "swr/infinite";
 import { PrismaClient } from "@prisma/client";
-import CardSm from "@/components/product/card-sm";
+import CardSm from "@/components/product/card";
 import { useState } from "react";
 
 const posts = [

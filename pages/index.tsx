@@ -2,7 +2,7 @@ import Head from "next/head";
 import useSWRInfinite from "swr/infinite";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect } from "react";
-import CardSm from "@/components/product/card-sm";
+import CardSm from "@/components/product/card";
 
 import Gallery from "@/components/product/gallery";
 

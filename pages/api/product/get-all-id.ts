@@ -5,6 +5,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const products = await prisma.product.findMany();
-  res.status(200).json(products);
+  const data = await prisma.product.findMany({
+    select: {
+      id: true,
+    },
+  });
+  const productIDs = data.map((product) => {
+    return product.id;
+  });
+  res.status(200).json(productIDs);
 }
