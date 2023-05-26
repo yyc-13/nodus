@@ -2,9 +2,9 @@ import Head from "next/head";
 import useSWRInfinite from "swr/infinite";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect } from "react";
-import CardSm from "@/components/product/card";
-
-import Gallery from "@/components/product/gallery";
+import BasicContentLayout from "@/components/layout/BasicContentLayout";
+import Carousel from "../components/utils/Carousel";
+import CardTags from "@/components/cards/components/CardTags";
 
 export default function Home() {
   return (
@@ -16,12 +16,19 @@ export default function Home() {
         <link rel="icon" href="#" />
       </Head>
       <main>
-        <div>
-          {/* Recommended */}
+        <div className="bg-white py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:max-w-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                From the blog
+              </h2>
+              <p className="mt-2 text-lg leading-8 text-gray-600">
+                Learn how to grow your business with our expert advice.
+              </p>
 
-          <Gallery type="recommend"></Gallery>
-          {/* videos */}
-          <Gallery type="videos"></Gallery>
+              <BasicContentLayout />
+            </div>
+          </div>
         </div>
       </main>
     </>

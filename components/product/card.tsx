@@ -1,4 +1,4 @@
-export default function CardSm({ product }) {
+export default function Card({ product, className }) {
   console.log("product", product);
 
   const date = new Date(product.createdAt);
@@ -15,7 +15,7 @@ export default function CardSm({ product }) {
   return (
     <article
       key={product.id}
-      className="flex max-w-xl flex-col items-start justify-between  w-96  border-theme-browner rounded-lg shadow-lg overflow-hidden px-6 py-4"
+      className="flex max-w-xl flex-col items-start justify-between border-theme-browner rounded-lg shadow-lg overflow-hidden px-6 py-4"
     >
       <div className="flex flex-col ">
         <div className="mb-2 text-xs ">

@@ -1,0 +1,14 @@
+ /* .filepond--root {
+   @apply rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300;
+ }
+.filepond--drop-label {
+  @apply rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300;
+}
+
+.filepond--label-action {
+  @apply rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300;
+}
+ */
+ .filepond--credits {
+   @apply hidden
+ }

@@ -142,21 +142,3 @@ export default function ProductPage({ product, reviewStatic, faqStatic }) {
     </>
   );
 }
-
-// for real time data
-// export async function getServerSideProps({ params }) {
-//   return { props: {} };
-// }
-
-// export default function ProductPage({ product }) {
-//   const router = useRouter();
-//   const { productId } = router.query;
-
-//   return (
-//     <>
-//       <ProductWithImage product={product} />
-//       <h1>Product Page</h1>
-//       <div>Product ID: {productId}</div>
-//     </>
-//   );
-// }

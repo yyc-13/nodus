@@ -10,41 +10,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// product
-model Product {
+
+enum FileType {
+  AUDIO
+  DOC
+  IMAGE 
+  VIDEO
+  TEXT
+}
+// Content
+model Content {
   id          String   @id @default(cuid())
   title       String
   description String
+  free        Boolean
+  sub         Boolean
   price       Int
-  type        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  seller      User     @relation(fields: [sellerId], references: [id])
-  sellerId    String
+  fileType        FileType
+  files        String[]
+  tags        String[]
+  mainCategory String[]
+  secondCategory String[]
+  freeSample      Boolean
+  sample      Sample?
+  card        Card?
+  creator      User     @relation(fields: [creatorId], references: [id])
+  creatorId    String
+
   purchases   Purchase[]
-  prodUrls    ProdUrl[]   
-  previewUrls PreviewUrl[] 
   reviews     Review[]
   questions   Question[]
   favorites   Favorite[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model ProdUrl {
+model Card {
   id          String   @id @default(cuid())
-  title       String?
-  description String?
-  url         String
-  product     Product  @relation(fields: [productId], references: [id])
-  productId   String
+  title       String
+  description String
+  fileType    FileType
+  file         String?
+  content     Content  @relation(fields: [contentId], references: [id])
+  contentId   String @unique
 }
 
-model PreviewUrl {
+model Sample {
   id          String   @id @default(cuid())
-  title       String?
-  description String?
-  url         String
-  product     Product  @relation(fields: [productId], references: [id])
-  productId   String
+  title       String
+  description String
+  fileType    FileType
+  file         String?
+  content     Content  @relation(fields: [contentId], references: [id])
+  contentId   String @unique
 }
 
 // payment
@@ -52,25 +70,23 @@ model Purchase {
   id        String @id @default(cuid())
   buyer     User   @relation(fields: [buyerId], references: [id])
   buyerId   String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
+  content   Content @relation(fields: [contentId], references: [id])
+  contentId String
+  price        Int
+  transactionId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  amount        Int
-  currency      String
-  paymentMethod String
-  transactionId String?
 }
 
 
 // FAQ
 model Question {
   id          String    @id @default(cuid())
-  content     String
+  question     String @default("question placeholder")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  product     Product   @relation(fields: [productId], references: [id])
-  productId   String
+  content     Content   @relation(fields: [contentId], references: [id])
+  contentId   String @default("clgegusax018hlqyhold3j59r")
   author      User      @relation(fields: [authorId], references: [id])
   authorId    String
   answers     Answer[]
@@ -78,11 +94,11 @@ model Question {
 
 model Answer {
   id          String    @id @default(cuid())
-  content     String
+  answer     String @default("answer placeholder")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   question    Question  @relation(fields: [questionId], references: [id])
-  questionId  String
+  questionId  String  @default("clgegvloq01k5lqyhx4bq69bu")
   author      User      @relation(fields: [authorId], references: [id])
   authorId    String
 }
@@ -91,14 +107,14 @@ model Answer {
 model Review {
   id          String   @id @default(cuid())
   title       String?
-  content     String?
+  review     String?
   rating      Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  product     Product  @relation(fields: [productId], references: [id])
-  productId   String
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    String
+  content     Content  @relation(fields: [contentId], references: [id])
+  contentId   String  @default("clgegusax018hlqyhold3j59r")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String  @default("clgegrocx0000lqyh4g76e3qh")
 }
 
 
@@ -114,7 +130,7 @@ model Conversation {
 
 model Message {
   id            String        @id @default(cuid())
-  content       String
+  message       String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   conversation  Conversation  @relation(fields: [conversationId], references: [id])
@@ -166,7 +182,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  products      Product[]
+  contents      Content[]
   purchases     Purchase[]
   reviews       Review[] 
   messages      Message[]
@@ -194,5 +210,5 @@ model Favorite {
   name      String?
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  products  Product[] 
+  contents  Content[] 
 }

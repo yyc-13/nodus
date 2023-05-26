@@ -5,7 +5,7 @@ import useSWR from "swr";
 
 async function fetcher(url) {
   const res = await fetch(url);
-  return res.json();
+  return await res.json();
 }
 
 export default function ProductFAQ({ productId, faqStatic }) {

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { FileType, PrismaClient } from "@prisma/client";
 
 let prisma: PrismaClient;
 
@@ -13,6 +13,13 @@ if (process.env.NODE_ENV === "production") {
 
 export default prisma;
 
+const fileTypeMapping = {
+  audio: FileType.AUDIO,
+  image: FileType.IMAGE,
+  doc: FileType.DOC,
+  video: FileType.VIDEO,
+  text: FileType.TEXT,
+};
 // export async function createTest(
 //   title: string,
 //   urls: string[],
@@ -49,27 +56,105 @@ export async function getUser(email: string) {
   return user;
 }
 
-export async function createProduct(
-  title: string,
-  description: string,
-  price: number,
-  type: string,
-  sellerId: string,
-  prodFileInfos: any[],
-  previewFileInfos: any[]
-) {
-  const product = await prisma.product.create({
+// export async function createProduct({
+//   title,
+//   description,
+//   price,
+//   type,
+//   sellerId,
+//   prodFileInfos,
+//   previewFileInfos,
+// }) {
+//   const product = await prisma.product.create({
+//     data: {
+//       title: title,
+//       description: description,
+//       price: price,
+//       type: type,
+//       sellerId: sellerId,
+//       prodUrls: {
+//         create: prodFileInfos,
+//       },
+//       previewUrls: { create: previewFileInfos },
+//     },
+//   });
+//   return product;
+// }
+
+export async function storeContent({
+  title,
+  description,
+  free,
+  sub,
+  price,
+  fileType,
+  files,
+  tags,
+  mainCategory,
+  secondCategory,
+  freeSample,
+  creatorId,
+}) {
+  const enumFileType = fileTypeMapping[fileType.toLowerCase()];
+  const content = await prisma.content.create({
     data: {
       title: title,
       description: description,
+      free: free,
+      sub: sub,
       price: price,
-      type: type,
-      sellerId: sellerId,
-      prodUrls: {
-        create: prodFileInfos,
-      },
-      previewUrls: { create: previewFileInfos },
+      fileType: enumFileType,
+      files: files,
+      tags: tags,
+      mainCategory: mainCategory,
+      secondCategory: secondCategory,
+      freeSample: freeSample,
+
+      creatorId: creatorId,
     },
   });
-  return product;
+  console.log("content", content);
+  return content;
+}
+
+export async function storeCard({
+  cardFileType,
+  cardDescription,
+  title,
+  cardFile,
+  contentId,
+}) {
+  const enumFileType = fileTypeMapping[cardFileType.toLowerCase()];
+  const card = await prisma.card.create({
+    data: {
+      fileType: enumFileType,
+      description: cardDescription,
+      title: title,
+      file: cardFile,
+      contentId: contentId,
+    },
+  });
+  console.log("card", card);
+  return card;
+}
+
+export async function storeSample({
+  sampleFileType,
+  sampleDescription,
+  title,
+  sampleFile,
+  contentId,
+}) {
+  const enumFileType = fileTypeMapping[sampleFileType.toLowerCase()];
+  const sample = await prisma.sample.create({
+    data: {
+      fileType: enumFileType,
+      description: sampleDescription,
+      title: title,
+      file: sampleFile,
+      contentId: contentId,
+    },
+  });
+  console.log("sample", sample);
+  return sample;
 }
