@@ -20,28 +20,6 @@ const fileTypeMapping = {
   video: FileType.VIDEO,
   text: FileType.TEXT,
 };
-// export async function createTest(
-//   title: string,
-//   urls: string[],
-//   description: string,
-//   price: number,
-//   type: string,
-//   previewUrls: string[],
-//   sellerId: string
-// ) {
-//   const product = await prisma.product.create({
-//     data: {
-//       title,
-//       urls: { set: urls },
-//       preview: { set: previewUrls },
-//       description,
-//       price,
-//       type,
-//       seller: { connect: { id: sellerId } },
-//     },
-//   });
-//   return product;
-// }
 
 export async function getUser(email: string) {
   console.log(email);
@@ -56,36 +34,10 @@ export async function getUser(email: string) {
   return user;
 }
 
-// export async function createProduct({
-//   title,
-//   description,
-//   price,
-//   type,
-//   sellerId,
-//   prodFileInfos,
-//   previewFileInfos,
-// }) {
-//   const product = await prisma.product.create({
-//     data: {
-//       title: title,
-//       description: description,
-//       price: price,
-//       type: type,
-//       sellerId: sellerId,
-//       prodUrls: {
-//         create: prodFileInfos,
-//       },
-//       previewUrls: { create: previewFileInfos },
-//     },
-//   });
-//   return product;
-// }
-
 export async function storeContent({
   title,
   description,
   free,
-  sub,
   price,
   fileType,
   files,
@@ -101,7 +53,6 @@ export async function storeContent({
       title: title,
       description: description,
       free: free,
-      sub: sub,
       price: price,
       fileType: enumFileType,
       files: files,
@@ -109,11 +60,14 @@ export async function storeContent({
       mainCategory: mainCategory,
       secondCategory: secondCategory,
       freeSample: freeSample,
-
-      creatorId: creatorId,
+      creator: {
+        connect: {
+          id: creatorId,
+        },
+      },
     },
   });
-  console.log("content", content);
+  console.log("store Content result", content);
   return content;
 }
 
@@ -127,14 +81,14 @@ export async function storeCard({
   const enumFileType = fileTypeMapping[cardFileType.toLowerCase()];
   const card = await prisma.card.create({
     data: {
-      fileType: enumFileType,
-      description: cardDescription,
       title: title,
+      description: cardDescription,
+      fileType: enumFileType,
       file: cardFile,
       contentId: contentId,
     },
   });
-  console.log("card", card);
+  console.log("store card result", card);
   return card;
 }
 
@@ -142,16 +96,16 @@ export async function storeSample({
   sampleFileType,
   sampleDescription,
   title,
-  sampleFile,
+  sampleFileUrls,
   contentId,
 }) {
   const enumFileType = fileTypeMapping[sampleFileType.toLowerCase()];
   const sample = await prisma.sample.create({
     data: {
-      fileType: enumFileType,
-      description: sampleDescription,
       title: title,
-      file: sampleFile,
+      description: sampleDescription,
+      fileType: enumFileType,
+      files: sampleFileUrls,
       contentId: contentId,
     },
   });

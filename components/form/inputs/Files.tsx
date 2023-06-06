@@ -17,13 +17,7 @@ registerPlugin(
 
 const fileTypesDic = {
   audio: ["audio/mpeg", "audio/wav"],
-  doc: [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.apple.pages",
-    "application/x-iwork-pages-sffpages",
-  ],
+  doc: ["application/pdf"],
   video: ["video/mp4", "video/webm"],
   image: ["image/jpeg", "image/png", "image/webp"],
 };

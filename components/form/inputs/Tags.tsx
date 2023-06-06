@@ -3,9 +3,9 @@ import { WithContext as ReactTags } from "react-tag-input";
 
 export default function TagsInput({ control, tags, setTags, errors }) {
   return (
-    <div className=" sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+    <div className=" sm:grid sm:grid-cols-3 sm:items-start sm:gap-4  sm:pt-5">
       <h2 className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-        add tags ( maximum : 4 )
+        add tags ( maximum : 3 )
       </h2>
       <div className="col-span-2">
         <Controller

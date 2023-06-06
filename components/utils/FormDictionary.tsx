@@ -6,27 +6,49 @@ import {
   useRef,
   useState,
 } from "react";
-import CategoryData from "../../lib/categoryData";
-
-const data = CategoryData;
+import formData from "../../lib/formData";
+const SelectedCategoryContext = createContext();
+const data = formData;
 import Masonry from "@mui/lab/Masonry";
 import QuickSearch from "./QuickSearch";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function CategoryDictionary({
+const formToFileType = (form) => {
+  switch (form[0]) {
+    case "podcasts":
+    case "music":
+    case "audio":
+      return "audio";
+    case "videos":
+      return "video";
+    case "books":
+    case "articles":
+    case "doc":
+      return "doc";
+    case "images":
+      return "image";
+
+    default:
+      throw new Error(
+        `something went wrong on registering file type(audio,video ...) `
+      );
+  }
+};
+
+export default function FormDictionary({
   open,
   setOpen,
   setCategory,
   setValue,
   title,
+  isActive,
   useRef,
+  setProductFileType,
 }) {
   const inputRef = useRef;
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState(data);
-
-  // short cut
 
   // search filter
   useEffect(() => {
@@ -85,6 +107,13 @@ export default function CategoryDictionary({
     setValue(title, categories);
     setCategory(categories);
     setOpen(false);
+
+    console.log("categories", categories);
+    const fileType = formToFileType(categories);
+    setProductFileType(fileType);
+    if (title == "category1") {
+      setValue("productFileType", fileType);
+    }
     return;
   };
 
@@ -125,18 +154,9 @@ export default function CategoryDictionary({
                   <span className="sr-only">Close modal</span>
                 </button>
 
-                <div className="mt-3 text-center sm:mt-5">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-base font-semibold leading-6 text-gray-900"
-                  >
-                    Select a category
-                  </Dialog.Title>
-                </div>
-
                 <div className="w-full p-10 space-y-8">
                   <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 w-full">
-                    Category Dictionary
+                    Form Dictionary
                   </h2>
                   <QuickSearch
                     inputRef={inputRef}

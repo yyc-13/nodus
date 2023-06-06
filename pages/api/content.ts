@@ -22,6 +22,7 @@ export default async function handler(
       try {
         const data = req.body;
         console.log("in /api/content", data);
+
         const {
           category2: secondCategory,
           category1: mainCategory,
@@ -34,7 +35,7 @@ export default async function handler(
           subscriber: sub,
           prodFileUrls: files,
           cardFileUrls: cardFiles,
-          sampleFileUrls: sampleFiles,
+          sampleFileUrls,
           sampleDescription,
           sampleFileType,
           tags: unprocessedTags,
@@ -52,12 +53,11 @@ export default async function handler(
 
         const tags = unprocessedTags.map((tag) => tag.text);
         const cardFile = cardFiles[0];
-        const sampleFile = sampleFiles[0];
+
         const { id: contentId } = await storeContent({
           title,
           description,
           free,
-          sub,
           price,
           fileType,
           files,
@@ -67,6 +67,7 @@ export default async function handler(
           freeSample,
           creatorId,
         });
+
         await storeCard({
           title,
           cardDescription,
@@ -74,17 +75,20 @@ export default async function handler(
           cardFile,
           contentId,
         });
+
         if (freeSample) {
           await storeSample({
             title,
             sampleDescription,
             sampleFileType,
-            sampleFile,
+            sampleFileUrls,
             contentId,
           });
         }
 
-        res.status(200).json({ message: "Data stored!" });
+        // TBD:store membership
+
+        res.status(200).json({ id: contentId });
       } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Error storing data" });

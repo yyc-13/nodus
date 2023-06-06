@@ -6,13 +6,23 @@ const schema = yup
       .boolean()
       .required("Please select if your content is free or not"),
 
-    subscriber: yup.boolean().when("free", {
-      is: true,
-      then: yup.boolean().notRequired(),
-      otherwise: yup
-        .boolean()
-        .required("Please select if your content is available to subscribers"),
-    }),
+    memberships: yup
+      .array()
+      .of(
+        yup.object().shape({
+          label: yup.string(),
+          value: yup.string(),
+        })
+      )
+      .when(["free", "price"], {
+        is: (free, price) => free === false && price == 0,
+        then: yup
+          .array()
+          .required(
+            "Select what membership you want this content to be access to."
+          ),
+        otherwise: yup.array().notRequired(),
+      }),
 
     price: yup.number().when("free", {
       is: true,
@@ -41,17 +51,16 @@ const schema = yup
     cardDescription: yup.string().required("Please enter a description"),
 
     // sample
-    sample: yup.boolean().when("free", {
-      is: false,
-      then: yup.boolean().required("Would you provide a free sample?"),
-      otherwise: yup.boolean().notRequired(),
-    }),
+    sample: yup
+      .boolean()
+      .required("please select if you want to provide a sample"),
+
     sampleDescription: yup.string().when("sample", {
       is: true,
       then: yup.string().required("Please enter a description for the sample"),
       otherwise: yup.string().notRequired(),
     }),
-    sampleFileType: yup.string().when("sample", {
+    sampleFileType: yup.string().when(["sample", "free"], {
       is: true,
       then: yup
         .string()
@@ -72,8 +81,11 @@ const schema = yup
       .array()
       .of(yup.string())
 
-      .required("please select at least one category"),
-    category2: yup.array().of(yup.string()).notRequired(),
+      .required("please select a form"),
+    category2: yup
+      .array()
+      .of(yup.string())
+      .required("please select a category"),
 
     tags: yup
       .array()

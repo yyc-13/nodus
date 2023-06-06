@@ -1,11 +1,7 @@
 // CategoryButton.tsx
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import CategoryDictionary from "./CategoryDictionary";
-
-const titleDic = {
-  category1: "main category",
-  category2: "sub category ( optional )",
-};
+import FormDictionary from "./FormDictionary";
 
 export default function CategoryButton({
   categoryModal,
@@ -14,6 +10,9 @@ export default function CategoryButton({
   setValue,
   title,
   category,
+  useRef,
+  setProductFileType,
+  errors,
 }) {
   const openModal = () => {
     setCategoryModal(true);
@@ -22,8 +21,13 @@ export default function CategoryButton({
   return (
     <div className=" sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
       <h2 className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-        Select {titleDic[title]}
+        Select {title == "category1" ? "form" : "category"}
       </h2>
+      {errors[title]?.message && (
+        <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
+          {errors[title]?.message}
+        </p>
+      )}
       {category.length == 0 && (
         <button
           title="Add a category"
@@ -42,6 +46,10 @@ export default function CategoryButton({
             onClick={() => {
               setCategory([]);
               setValue(title, []);
+              if (title == "category1") {
+                setProductFileType("");
+                setValue("productFileType", "");
+              }
             }}
             className="w-6 h-6 flex items-center justify-center "
           >
@@ -79,13 +87,27 @@ export default function CategoryButton({
           )}
         </div>
       )}
-      <CategoryDictionary
-        setValue={setValue}
-        title={title}
-        open={categoryModal}
-        setOpen={setCategoryModal}
-        setCategory={setCategory}
-      />
+      {title == "category1" ? (
+        <FormDictionary
+          setValue={setValue}
+          title={title}
+          open={categoryModal}
+          setOpen={setCategoryModal}
+          setCategory={setCategory}
+          isActive={true}
+          useRef={useRef}
+          setProductFileType={setProductFileType}
+        />
+      ) : (
+        <CategoryDictionary
+          setValue={setValue}
+          title={title}
+          open={categoryModal}
+          setOpen={setCategoryModal}
+          setCategory={setCategory}
+          useRef={useRef}
+        />
+      )}
     </div>
   );
 }

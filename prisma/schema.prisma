@@ -24,7 +24,7 @@ model Content {
   title       String
   description String
   free        Boolean
-  sub         Boolean
+  
   price       Int
   fileType        FileType
   files        String[]
@@ -36,14 +36,35 @@ model Content {
   card        Card?
   creator      User     @relation(fields: [creatorId], references: [id])
   creatorId    String
-
-  purchases   Purchase[]
+  memberships ContentMembership[]
+  purchases   PurchaseContent[]
   reviews     Review[]
   questions   Question[]
   favorites   Favorite[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model Membership{
+  id String @id @default(cuid())
+  name String
+  description String
+  price Int
+  content ContentMembership[]
+  purchased PurchaseMembership[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContentMembership {
+  contentId    String
+  content      Content     @relation(fields: [contentId], references: [id])
+  membershipId String
+  membership   Membership  @relation(fields: [membershipId], references: [id])
+  
+  @@id([contentId, membershipId])
+}
+
 
 model Card {
   id          String   @id @default(cuid())
@@ -60,13 +81,13 @@ model Sample {
   title       String
   description String
   fileType    FileType
-  file         String?
+  files         String[]
   content     Content  @relation(fields: [contentId], references: [id])
   contentId   String @unique
 }
 
 // payment
-model Purchase {
+model PurchaseContent {
   id        String @id @default(cuid())
   buyer     User   @relation(fields: [buyerId], references: [id])
   buyerId   String
@@ -78,6 +99,17 @@ model Purchase {
   updatedAt DateTime @updatedAt
 }
 
+model PurchaseMembership{
+  id        String @id @default(cuid())
+  buyer     User   @relation(fields: [buyerId], references: [id])
+  buyerId   String
+  membershipId String 
+  membership Membership @relation(fields: [membershipId], references: [id])
+  price        Int
+  transactionId String?
+  createdAt DateTime @default(now())
+  
+}
 
 // FAQ
 model Question {
@@ -183,7 +215,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   contents      Content[]
-  purchases     Purchase[]
+  purchases     PurchaseContent[]
+  membershipsPurchased  PurchaseMembership[]
   reviews       Review[] 
   messages      Message[]
   conversations Conversation[] 

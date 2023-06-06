@@ -1,8 +1,9 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 import * as yup from "yup";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import TextInput from "./inputs/Text";
 import DropDown from "./inputs/DropDown";
@@ -20,6 +21,7 @@ import toast from "react-hot-toast";
 type formData = yup.InferType<typeof schema>;
 
 export default function Form() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -44,7 +46,6 @@ export default function Form() {
   const [cardFiles, setCardFiles] = useState();
 
   const [free, setFree] = useState(false);
-  const [sub, setSub] = useState(false);
 
   const [price, setPrice] = useState(0);
   const [sample, setSample] = useState(false);
@@ -70,113 +71,6 @@ export default function Form() {
     category: category1,
     user: session?.user,
   };
-
-  // const onSubmit = async (data: any) => {
-  //   console.log("form data", data);
-
-  //   try {
-  // Combine the promises using Promise.all
-
-  // const upload = async (data) => {
-  // console.log("data under upload", data);
-  // try {
-  //   const prodFileResult = await storeFile(
-  //     prodFile?.[0],
-  //     "prod",
-  //     productFileType
-  //   );
-  //   console.log("prodFileResult");
-  //   const cardFileResult = await storeFile(
-  //     cardFile?.[0],
-  //     "card",
-  //     cardFileType
-  //   );
-  //   const sampleFileResult = await storeFile(
-  //     sampleFile?.[0],
-  //     "sample",
-  //     sampleFileType
-  //   );
-
-  //   console.log("product", cardFileResult);
-
-  // const results = await Promise.all([
-  //   prodFileResult,
-  //   cardFileResult,
-  //   sampleFileResult,
-  // ]);
-  // console.log("results", results);
-
-  // Destructure the results array to get the fileUrls
-
-  // const customData = { free: free, sub: sub, price: price, results };
-  // const finalData = { ...data, customData };
-  // console.log("finalData", finalData);
-  // const response = await fetch("/api/content", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(finalData),
-  // });
-
-  // const result = await response.json();
-  // console.log(result);
-
-  // return the result or throw an error if something went wrong
-  //     return;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // await upload(data);
-  // Call the toast.promise function
-  // toast.promise(upload(data), {
-  //   loading: "Saving...",
-  //   success: <b>Settings saved!</b>,
-  //   error: <b>Could not save.</b>,
-  // });
-
-  // const prodFileInfos = prodFile.map((file, index) => {
-  //   // const description =
-  //   //   document.getElementById(`prod-file-descrpition-` + index)?.value ||
-  //   //   "";
-  //   // const name =
-  //   //   document.getElementById(`prod-file-name-` + index)?.value || "";
-  //   return { title: name, description: description, url: prodUrls[index] };
-  // });
-
-  // const sampleFileInfos = sampleFileInfos.map((file, index) => {
-  //   const description = document.getElementById(
-  //     `sample-file-description-` + index
-  //   )?.value;
-  //   const name = document.getElementById(
-  //     `sample-file-name-` + index
-  //   )?.value;
-  //   return {
-  //     title: name,
-  //     description: description,
-  //     url: sampleUrls[index],
-  //   };
-  // });
-
-  // data.prodFileInfos = prodFileInfos;
-  // data.sampleFileInfos = sampleFileInfos;
-  // data.prodUrls = prodUrls;
-  // data.sampleUrls = sampleUrls;
-  // data.email = session?.user?.email;
-
-  // await fetch("/api/product/create", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(data),
-  // });
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
 
   const onSubmit = async (data) => {
     try {
@@ -216,12 +110,44 @@ export default function Form() {
         throw new Error(`HTTP error! status:${res.status}`);
       }
       const result = await res.json();
-      console.log("result of sending data", result);
+      console.log("result after form submission", result);
+      // router.push(`/content/${result.id}`);
     } catch (error) {
       console.error("An error occurred during form submission:", error);
-      // Add any additional error handling logic here
     }
   };
+
+  // shortcut for form and category modal
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.metaKey && event.key === "k") {
+        event.preventDefault();
+        if (categoryModal1) {
+          categoryModalRef1.current.focus();
+        }
+        if (categoryModal2) {
+          categoryModalRef2.current.focus();
+        }
+      } else if (event.key === "Escape") {
+        if (categoryModal1) {
+          categoryModalRef1.current.blur();
+        }
+        if (categoryModal2) {
+          categoryModalRef2.current.blur();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [categoryModal1, categoryModal2]);
+
+  const categoryModalRef1 = useRef();
+  const categoryModalRef2 = useRef();
 
   return (
     <div className="px-10 w-full ">
@@ -237,18 +163,57 @@ export default function Form() {
                   register={register}
                   free={free}
                   setFree={setFree}
-                  sub={sub}
-                  setSub={setSub}
                   price={price}
                   setPrice={setPrice}
                   errors={errors}
                   watch={watch}
                   setValue={setValue}
+                  Controller={Controller}
+                  control={control}
                 />
               </div>
             </div>
 
             <div className="space-y-6 sm:space-y-5">
+              {/* categories */}
+              <div className="border-b border-gray-900/10 pb-12 flex flex-col gap-y-4">
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">
+                    Form and Cateogry
+                  </h2>
+                </div>
+                <CategoryButton
+                  categoryModal={categoryModal1}
+                  setCategoryModal={setCategoryModal1}
+                  setCategory={setCategory1}
+                  setValue={setValue}
+                  category={category1}
+                  title="category1"
+                  useRef={categoryModalRef1}
+                  setProductFileType={setProductFileType}
+                  errors={errors}
+                />
+
+                <CategoryButton
+                  categoryModal={categoryModal2}
+                  setCategoryModal={setCategoryModal2}
+                  setCategory={setCategory2}
+                  category={category2}
+                  setValue={setValue}
+                  title="category2"
+                  useRef={categoryModalRef2}
+                  setProductFileType={null}
+                  errors={errors}
+                />
+
+                {/* tags */}
+                <TagsInput
+                  control={control}
+                  tags={tags}
+                  setTags={setTags}
+                  errors={errors}
+                />
+              </div>
               {/* production */}
               <div className="border-b border-gray-900/10 pb-12 flex flex-col gap-y-4">
                 <div>
@@ -264,13 +229,6 @@ export default function Form() {
                   title={"title"}
                   register={register}
                   errors={errors}
-                />
-                <DropDown
-                  title={"productFileType"}
-                  register={register}
-                  errors={errors}
-                  setFileType={setProductFileType}
-                  filepond--credits
                 />
 
                 {productFileType && (
@@ -289,43 +247,6 @@ export default function Form() {
                 />
               </div>
 
-              {/* categories */}
-              <div className="border-b border-gray-900/10 pb-12 flex flex-col gap-y-4">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">
-                    Cateogry
-                  </h2>
-
-                  <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Select categories ( max 2 ) and tags ( max 3 ).
-                  </p>
-                </div>
-                <CategoryButton
-                  categoryModal={categoryModal1}
-                  setCategoryModal={setCategoryModal1}
-                  setCategory={setCategory1}
-                  setValue={setValue}
-                  category={category1}
-                  title="category1"
-                />
-
-                <CategoryButton
-                  categoryModal={categoryModal2}
-                  setCategoryModal={setCategoryModal2}
-                  setCategory={setCategory2}
-                  category={category2}
-                  setValue={setValue}
-                  title="category2"
-                />
-
-                {/* tags */}
-                <TagsInput
-                  control={control}
-                  tags={tags}
-                  setTags={setTags}
-                  errors={errors}
-                />
-              </div>
               {/* card */}
               <div className="border-b border-gray-900/10 pb-12 flex flex-col gap-y-4">
                 <div>
@@ -354,19 +275,21 @@ export default function Form() {
                   register={register}
                   errors={errors}
                 />
-                <CardPreview cardData={cardData} />
+                {/* <CardPreview cardData={cardData} /> */}
               </div>
               {/* sample */}
+
               <div className="border-b border-gray-900/10 pb-12 flex flex-col gap-y-4">
-                {!free && (
+                <>
                   <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
                     <div className="text-sm leading-6">
                       <h2 className="text-base font-semibold leading-7 text-gray-900">
-                        free sample
+                        Sample
                       </h2>
 
                       <p className="mt-1 text-sm leading-6 text-gray-600">
-                        Free sample can be viewed by all users.
+                        Accessible to everyone, could be a trailer, shorter or
+                        free version.
                       </p>
                     </div>
                     <div className="flex justify-center items-center h-6 self-center">
@@ -383,36 +306,36 @@ export default function Form() {
                       />
                       {errors.sample?.message && (
                         <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
-                          {errors.sample?.message}
+                          please select sample.
                         </p>
                       )}
                     </div>
                   </div>
-                )}
-                {sample && (
-                  <DropDown
-                    title={"sampleFileType"}
-                    register={register}
-                    errors={errors}
-                    setFileType={setSampleFileType}
-                  />
-                )}
-                {sampleFileType && (
-                  <FilesInput
-                    title="sample"
-                    files={sampleFiles}
-                    setFiles={setSampleFiles}
-                    register={register}
-                    fileType={cardFileType}
-                  />
-                )}
-                {sample && (
-                  <Textarea
-                    title={"sampleDescription"}
-                    register={register}
-                    errors={errors}
-                  />
-                )}
+                  {sample && (
+                    <DropDown
+                      title={"sampleFileType"}
+                      register={register}
+                      errors={errors}
+                      setFileType={setSampleFileType}
+                    />
+                  )}
+                  {sampleFileType && (
+                    <FilesInput
+                      title="sample"
+                      files={sampleFiles}
+                      setFiles={setSampleFiles}
+                      register={register}
+                      fileType={sampleFileType}
+                    />
+                  )}
+                  {sample && (
+                    <Textarea
+                      title={"sampleDescription"}
+                      register={register}
+                      errors={errors}
+                    />
+                  )}
+                </>
               </div>
 
               <div className="pt-5">
