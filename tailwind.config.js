@@ -76,6 +76,7 @@ module.exports = {
     require("@tailwindcss/aspect-ratio"),
     require("@headlessui/tailwindcss"),
     require("daisyui"),
+    require("@tailwindcss/line-clamp"),
   ],
   daisyui: {
     darkTheme: "class",

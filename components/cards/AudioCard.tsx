@@ -1,11 +1,12 @@
 import BreadCrumb from "../utils/BreadCrumb";
 import BookmarkModal from "../utils/BookmarkModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 import UserMedia from "./components/UserMedia";
 import CardTags from "./components/CardTags";
 import { createMultilineEllipsisStyle } from "../../lib/MultilineEllipsis";
 import TitleAndBookmark from "./components/TitleAndBookmark";
+import { getPublicSupabaseUrl } from "@/lib/utils/SupabaseUrl";
 
 const data = {
   title: "Title placeholder",
@@ -34,43 +35,36 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function AudioCard({ cardData = data }) {
-  const src =
-    cardData.title == "Title placeholder"
-      ? cardData.file[0]
-      : URL.createObjectURL(cardData.file[0]);
+export default function AudioCard({ basicContent }) {
+  if (!basicContent) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div
-      className={classNames(
-        cardData.preview
-          ? "sm:min-w-[288px] sm:min-h-[450px] lg:min-w-[895px] lg:min-h-[256px]"
-          : "",
-        "relative isolate flex flex-col gap-8  lg:flex-row"
-      )}
-    >
+    <div className={"relative isolate flex flex-col gap-8  lg:flex-row"}>
       <div className="grow flex flex-col">
         <div className=" flex justify-between">
-          <CardTags tags={cardData.tags} />
+          <CardTags tags={basicContent.tags} />
         </div>
 
-        <BreadCrumb categories={cardData.category} />
+        <BreadCrumb categories={basicContent.mainCategory} />
         <audio
           className="w-full p-2 mt-2"
-          src={src}
+          src={basicContent.card.file}
           controls
           preload="metadata"
         />
         <div className="group relative grow">
-          <TitleAndBookmark title={cardData.title} />
+          <TitleAndBookmark title={basicContent.title} />
 
           <p
             className="mt-5 text-sm leading-6 text-gray-600 dark:text-gray-400"
             style={createMultilineEllipsisStyle(11)}
           >
-            {cardData.description && cardData.description}
+            {basicContent.card.description && basicContent.card.description}
           </p>
         </div>
-        <UserMedia user={cardData.user} />
+        <UserMedia user={basicContent.user} />
       </div>
     </div>
   );

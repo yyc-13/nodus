@@ -1,22 +1,181 @@
 import { Tab } from "@headlessui/react";
-import {
-  BookmarkIcon,
-  ShareIcon,
-  ArrowUpCircleIcon,
-  BanknotesIcon,
-} from "@heroicons/react/20/solid";
-import ImageCard from "../../cards/ImageCard";
 
-const data = [
-  { name: "free", href: "#", current: true },
-  { name: "premium", href: "#", current: false },
-  { name: "card", href: "#", current: false },
-];
+import ImageCard from "../ImageCard";
+import VideoCard from "../VideoCard";
+import AudioCard from "../AudioCard";
+import TextCard from "../TextCard";
+
+import { useRouter } from "next/router";
+import useSWR from "swr";
+
+import AudioMain from "../AudioMain";
+import VideoMain from "../VideoMain";
+import DocMain from "../DocMain";
+
+import NoAceess from "./NoAccess";
+
+const fileTypeCard = (fileType, basicContent) => {
+  switch (fileType) {
+    case "IMAGE":
+      return <ImageCard basicContent={basicContent} />;
+    case "VIDEO":
+      return <VideoCard basicContent={basicContent} />;
+    case "AUDIO":
+      return <AudioCard basicContent={basicContent} />;
+    case "TEXT":
+      return <TextCard basicContent={basicContent} />;
+  }
+};
+
+const fileTypeContent = (fileType, basicContent, mainContent, sampleOrMain) => {
+  switch (fileType) {
+    case "VIDEO":
+      return (
+        <VideoMain
+          basicContent={basicContent}
+          mainContent={mainContent}
+          sampleOrMain={sampleOrMain}
+        />
+      );
+    case "AUDIO":
+      return (
+        <AudioMain
+          basicContent={basicContent}
+          mainContent={mainContent}
+          sampleOrMain={sampleOrMain}
+        />
+      );
+    case "DOC":
+      return (
+        <DocMain
+          basicContent={basicContent}
+          mainContent={mainContent}
+          sampleOrMain={sampleOrMain}
+        />
+      );
+  }
+};
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-export default function Tabs({ tabs = data }) {
+
+export default function ContentTabs({ basicContent }) {
+  const router = useRouter();
+  const { id: contentId } = router.query;
+  const { data: mainContent, error } = useSWR(
+    contentId ? `/api/content/${contentId}/main` : null,
+    fetcher
+  );
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!mainContent) {
+    return <div>Loading...</div>;
+  }
+
+  const noAccess = error?.response?.status === 403;
+
+  const {
+    card,
+    createdAt,
+    creator,
+    creatorId,
+    fileType,
+    free,
+    freeSample,
+    memberships,
+    price,
+    questions,
+    reviews,
+    tags,
+    title,
+    updatedAt,
+    sample,
+  } = basicContent;
+
+  let tabs = [];
+  let panels = [];
+  if (free && freeSample) {
+    tabs.push(
+      { name: "sample", href: "#", current: true },
+      { name: "main", href: "#", current: false },
+      { name: "card", href: "#", current: false }
+    );
+    const samplePanel = fileTypeContent(
+      sample.fileType,
+      basicContent,
+      mainContent,
+      "sample"
+    );
+    const mainPanel = fileTypeContent(
+      fileType,
+      basicContent,
+      mainContent,
+      "main"
+    );
+    const cardPanel = fileTypeCard(card.fileType, basicContent);
+    panels.push(samplePanel, mainPanel, cardPanel);
+  } else if (free) {
+    tabs.push(
+      { name: "main", href: "#", current: true },
+      { name: "card", href: "#", current: false }
+    );
+    const mainPanel = fileTypeContent(
+      fileType,
+      basicContent,
+      mainContent,
+      "main"
+    );
+    const cardPanel = fileTypeCard(card.fileType, basicContent);
+    panels.push(mainPanel, cardPanel);
+  } else if ((price > 0 || memberships.length > 0) && freeSample) {
+    tabs.push(
+      { name: "sample", href: "#", current: true },
+      { name: "main", href: "#", current: false },
+      { name: "card", href: "#", current: false }
+    );
+    const samplePanel = fileTypeContent(
+      sample.fileType,
+      basicContent,
+      mainContent,
+      "sample"
+    );
+    const mainPanel = fileTypeContent(
+      fileType,
+      basicContent,
+      mainContent,
+      "main"
+    );
+    const cardPanel = noAccess ? (
+      <NoAceess />
+    ) : (
+      fileTypeCard(card.fileType, basicContent)
+    );
+    panels.push(samplePanel, mainPanel, cardPanel);
+  } else if (price > 0 || memberships.length > 0) {
+    tabs.push(
+      { name: "main", href: "#", current: false },
+      { name: "card", href: "#", current: true }
+    );
+    const mainPanel = fileTypeContent(
+      fileType,
+      basicContent,
+      mainContent,
+      "main"
+    );
+    const cardPanel = noAccess ? (
+      <NoAceess />
+    ) : (
+      fileTypeCard(card.fileType, basicContent)
+    );
+    panels.push(mainPanel, cardPanel);
+  }
+
   return (
     <>
       <div className="block">
@@ -35,134 +194,10 @@ export default function Tabs({ tabs = data }) {
             </nav>
           </Tab.List>
           <Tab.Panels>
-            <Tab.Panel>
-              <img
-                src="https://dummyimage.com/600x400/000/333"
-                alt="test"
-                className="mt-4
-            rounded-lg "
-              />
-              <div className="text-xl font-medium text-gray-900 my-4 lg:my-6">
-                Lorem ipsum dolor sit amet consectetur
-              </div>
-              <div className="lg:grid lg:grid-cols-8">
-                <div className="prose prose-sm mt-4 text-gray-500 lg:col-span-5">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
-                  in quos, eum, quae est distinctio accusantium debitis harum
-                  dignissimos expedita aut quibusdam exercitationem ipsam
-                  corrupti tenetur ratione hic minima. Numquam?
-                </div>
-                <div className="lg:col-span-3 my-2  ">
-                  <div className="grid grid-cols-2  justify-start items-center  gap-x-4 gap-y-2 py-2">
-                    <button
-                      type="button"
-                      className="  rounded-md shadow-sm relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                    >
-                      <BookmarkIcon className="-ml-0.5 h-5 w-5 text-gray-400" />
-                      Bookmark
-                    </button>
-                    <button
-                      type="button"
-                      className="  rounded-md shadow-sm relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                    >
-                      <ShareIcon className="-ml-0.5 h-5 w-5 text-gray-400" />
-                      Share
-                    </button>
-                    <span className="    isolate inline-flex rounded-md shadow-sm">
-                      <button
-                        type="button"
-                        className="  relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                        title="upvote"
-                      >
-                        <ArrowUpCircleIcon
-                          className="-ml-0.5 h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </button>
-                      <button
-                        type="button"
-                        className="grow relative  inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                      >
-                        12k
-                      </button>
-                    </span>
-                    <button
-                      type="button"
-                      className=" rounded-md shadow-sm relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                    >
-                      <BanknotesIcon className="-ml-0.5 h-5 w-5 text-gray-400" />
-                      Tip
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Tab.Panel>
-            <Tab.Panel>
-              <img
-                src="https://dummyimage.com/600x400/000/333"
-                alt="test"
-                className="mt-4
-            rounded-lg "
-              />
-              <div className="text-xl font-medium text-gray-900 my-4 lg:my-6">
-                Lorem ipsum dolor sit amet consectetur
-              </div>
-              <div className="lg:grid lg:grid-cols-8">
-                <div className="prose prose-sm mt-4 text-gray-500 lg:col-span-5">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
-                  in quos, eum, quae est distinctio accusantium debitis harum
-                  dignissimos expedita aut quibusdam exercitationem ipsam
-                  corrupti tenetur ratione hic minima. Numquam?
-                </div>
-                <div className="lg:col-span-3   ">
-                  <div className="flex flex-wrap justify-start  gap-x-4 gap-y-2">
-                    <button
-                      type="button"
-                      className=" col-span-6 rounded-md shadow-sm relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                    >
-                      <BookmarkIcon className="-ml-0.5 h-5 w-5 text-gray-400" />
-                      Bookmark
-                    </button>
-                    <button
-                      type="button"
-                      className=" col-span-6 rounded-md shadow-sm relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                    >
-                      <ShareIcon className="-ml-0.5 h-5 w-5 text-gray-400" />
-                      Share
-                    </button>
-                    <span className=" col-span-4   isolate inline-flex rounded-md shadow-sm">
-                      <button
-                        type="button"
-                        className="  relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                        title="upvote"
-                      >
-                        <ArrowUpCircleIcon
-                          className="-ml-0.5 h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </button>
-                      <button
-                        type="button"
-                        className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                      >
-                        12k
-                      </button>
-                    </span>
-
-                    <button
-                      type="button"
-                      className="col-span-4 rounded-md shadow-sm relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                    >
-                      <BanknotesIcon className="-ml-0.5 h-5 w-5 text-gray-400" />
-                      Tip
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Tab.Panel>
-            <Tab.Panel>
-              <ImageCard />
-            </Tab.Panel>
+            {/* when Panel is ready */}
+            {panels.map((panel, index) => (
+              <Tab.Panel key={index}>{panel}</Tab.Panel>
+            ))}
           </Tab.Panels>
         </Tab.Group>
       </div>

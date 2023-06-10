@@ -1,10 +1,6 @@
 import Head from "next/head";
-import useSWRInfinite from "swr/infinite";
-import { useInView } from "react-intersection-observer";
-import { useState, useEffect } from "react";
-import BasicContentLayout from "@/components/layout/BasicContentLayout";
-import Carousel from "../components/utils/Carousel";
-import CardTags from "@/components/cards/components/CardTags";
+
+import BasicContentLayout from "@/components/layout/Index";
 
 export default function Home() {
   return (
@@ -16,20 +12,7 @@ export default function Home() {
         <link rel="icon" href="#" />
       </Head>
       <main>
-        <div className="bg-white py-24 sm:py-32">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl lg:max-w-4xl">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                From the blog
-              </h2>
-              <p className="mt-2 text-lg leading-8 text-gray-600">
-                Learn how to grow your business with our expert advice.
-              </p>
-
-              <BasicContentLayout />
-            </div>
-          </div>
-        </div>
+        <BasicContentLayout />
       </main>
     </>
   );

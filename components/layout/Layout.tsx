@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import TopNav from "./TopNav";
 import Sidebar from "./Sidebar";
-import useOutsideClick from "../../lib/useOutsideClick";
+import useOutsideClick from "../../lib/sidebarControl";
 
 export default function Layout({ children = "No content provided." }) {
   const [sidebar, setSidebar] = useState(false);

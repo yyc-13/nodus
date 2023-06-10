@@ -1,96 +1,101 @@
 import formidable from "formidable";
-import prisma from "@/lib/prismaClient";
-import { createProduct, getUser } from "@/lib/prismaClient";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-interface Product {
-  title: string;
-  urls: string[];
-  preview: string[];
-  description: string;
-  price: number;
-  type: string;
-}
+import { NextApiRequest, NextApiResponse } from "next";
+import {
+  storeContent,
+  getUser,
+  storeSample,
+  storeCard,
+} from "@/lib/prismaClient";
+import { getSession } from "next-auth/react";
+import { FileType } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "POST") {
-    const form = new formidable.IncomingForm();
+  const { method } = req;
+  switch (method) {
+    case "GET":
+      res.status(405).send("GET requests are not supported at this endpoint.");
+      break;
+    case "POST":
+      try {
+        const data = req.body;
 
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        res.status(500).json({ error: "Error on parsing incoming form" });
+        const {
+          category2: secondCategory,
+          category1: mainCategory,
+          title,
+          productFileType: fileType,
+          productDescription: description,
+          free,
+          sample: freeSample,
+          price,
+          subscriber: sub,
+          prodFileUrls: files,
+          cardFileUrls: cardFiles,
+          sampleFileUrls,
+          sampleDescription,
+          sampleFileType,
+          tags: unprocessedTags,
+          cardDescription,
+          cardFileType,
+        } = data;
+
+        const session = await getSession({ req });
+        if (!session || !session.user || !session.user.email) {
+          res.status(401).send("Unauthorized");
+          return;
+        }
+        const user = await getUser(session.user?.email);
+        const creatorId = user?.id;
+
+        const tags = unprocessedTags.map((tag) => tag.text);
+        const cardFile = cardFiles[0];
+
+        const { id: contentId } = await storeContent({
+          title,
+          description,
+          free,
+          price,
+          fileType,
+          files,
+          tags,
+          mainCategory,
+          secondCategory,
+          freeSample,
+          creatorId,
+        });
+
+        await storeCard({
+          title,
+          cardDescription,
+          cardFileType,
+          cardFile,
+          contentId,
+        });
+
+        if (freeSample) {
+          await storeSample({
+            title,
+            sampleDescription,
+            sampleFileType,
+            sampleFileUrls,
+            contentId,
+          });
+        }
+
+        // TBD:store membership
+
+        res.status(200).json({ id: contentId });
+      } catch (err) {
         console.error(err);
-        return;
+        res.status(500).json({ error: "Error storing data" });
       }
-      console.log("fields", fields);
-      console.log("file info", fields.prodFileInfos, fields.previewFileInfos);
+      break;
 
-      const {
-        type,
-        title,
-        description,
-        prodUrls: unprocessedProdUrls,
-        price,
-        previewUrls: unprocessedPreviewUrls,
-        email,
-      } = fields;
-
-      const prodUrls = unprocessedProdUrls.split(",");
-      const previewUrls = unprocessedPreviewUrls.split(",");
-
-      let prodFileInfos = [];
-      let previewFileInfos = [];
-      for (let i = 0; i < prodUrls.length; i++) {
-        const prodFileInfo = fields[`prodFileInfo[${i}]`];
-        prodFileInfos.push(JSON.parse(prodFileInfo));
-      }
-      for (let i = 0; i < previewUrls.length; i++) {
-        const previewFileInfo = fields[`previewFileInfo[${i}]`];
-        previewFileInfos.push(JSON.parse(previewFileInfo));
-      }
-      console.log(prodFileInfos, previewFileInfos);
-
-      const user = await getUser(email);
-      console.log("user", user);
-      const sellerId = user!.id;
-
-      const product = await createProduct(
-        title,
-        description,
-        parseInt(price),
-        type,
-        sellerId,
-        prodFileInfos,
-        previewFileInfos
-      );
-      console.log("product", product);
-      res.status(200).json(product);
-    });
-  } else {
-    res.status(405).json({ error: "Method not allowed." });
+    default:
+      res.setHeader("Allow", ["GET", "POST"]);
+      res.status(405).end(`Method ${method} Not Allowed`);
   }
-  // const { title, urls, preview, description, price, type,email } =
-  //   req.body as Product;
-  //   console.log(email)
-  //   await prisma.
-  // const newProduct = await prisma.product.create({
-  //   data: {
-  //     title,
-  //     urls,
-  //     preview,
-  //     description,
-  //     price,
-  //     type,
-  //   },
-  // });
-  // res.status(201).json(newProduct);
 }

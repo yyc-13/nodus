@@ -12,3 +12,11 @@
  .filepond--credits {
    @apply hidden
  }
+
+ .filepond--drop-label {
+   display: none;
+ }
+
+ .filepond--wrapper {
+   display: none;
+ }

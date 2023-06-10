@@ -14,12 +14,11 @@ export default function App({
   return (
     <>
       <SessionProvider session={session}>
-        {!router.pathname.startsWith("/flowbite") &&
-          !router.pathname.startsWith("/404") && (
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          )}
+        {!router.pathname.startsWith("/404") && (
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        )}
 
         <Toaster />
       </SessionProvider>

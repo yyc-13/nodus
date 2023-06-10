@@ -1,35 +1,34 @@
 import { StarIcon } from "@heroicons/react/20/solid";
-
-const reviews = {
-  average: 4,
-  totalCount: 1624,
-  counts: [
-    { rating: 5, count: 1019 },
-    { rating: 4, count: 162 },
-    { rating: 3, count: 97 },
-    { rating: 2, count: 199 },
-    { rating: 1, count: 147 },
-  ],
-  featured: [
-    {
-      id: 1,
-      rating: 5,
-      content: `
-        <p>This is the bag of my dreams. I took it on my last vacation and was able to fit an absurd amount of snacks for the many long and hungry flights.</p>
-      `,
-      author: "Emily Selman",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    // More reviews...
-  ],
-};
+import { useState } from "react";
+import useSWR from "swr";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Review() {
+async function fetcher(url) {
+  const res = await fetch(url);
+  return res.json();
+}
+
+export default function ProductReview({ reviewStatic, productId }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
+
+  const { data: reviews, error } = useSWR(
+    `/api/product/review?productId=${productId}&page=${currentPage}&limit=${reviewsPerPage}`,
+    fetcher
+  );
+  console.log("reviews", reviews);
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+  const totalPages = Math.ceil(reviewStatic.reviewCount / reviewsPerPage);
+
+  function handlePageChange(newPage) {
+    setCurrentPage(newPage);
+  }
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
@@ -41,11 +40,11 @@ export default function Review() {
           <div className="mt-3 flex items-center">
             <div>
               <div className="flex items-center">
-                {[0, 1, 2, 3, 4].map((rating) => (
+                {[0, 1, 2, 3, 4].map((star, index) => (
                   <StarIcon
-                    key={rating}
+                    key={index}
                     className={classNames(
-                      reviews.average > rating
+                      reviewStatic.avgRating > star
                         ? "text-yellow-400"
                         : "text-gray-300",
                       "h-5 w-5 flex-shrink-0"
@@ -54,10 +53,10 @@ export default function Review() {
                   />
                 ))}
               </div>
-              <p className="sr-only">{reviews.average} out of 5 stars</p>
+              <p className="sr-only">{reviewStatic.avgRating} out of 5 stars</p>
             </div>
             <p className="ml-2 text-sm text-gray-900">
-              Based on {reviews.totalCount} reviews
+              Based on {reviewStatic.reviewCount} reviews
             </p>
           </div>
 
@@ -65,7 +64,7 @@ export default function Review() {
             <h3 className="sr-only">Review data</h3>
 
             <dl className="space-y-3">
-              {reviews.counts.map((count) => (
+              {reviewStatic.ratingCounts.map((count) => (
                 <div key={count.rating} className="flex items-center text-sm">
                   <dt className="flex flex-1 items-center">
                     <p className="w-3 font-medium text-gray-900">
@@ -90,7 +89,7 @@ export default function Review() {
                           <div
                             className="absolute inset-y-0 rounded-full border border-yellow-400 bg-yellow-400"
                             style={{
-                              width: `calc(${count.count} / ${reviews.totalCount} * 100%)`,
+                              width: `calc(${count.count} / ${reviewStatic.reviewCount} * 100%)`,
                             }}
                           />
                         ) : null}
@@ -98,7 +97,8 @@ export default function Review() {
                     </div>
                   </dt>
                   <dd className="ml-3 w-10 text-right text-sm tabular-nums text-gray-900">
-                    {Math.round((count.count / reviews.totalCount) * 100)}%
+                    {Math.round((count.count / reviewStatic.reviewCount) * 100)}
+                    %
                   </dd>
                 </div>
               ))}
@@ -128,46 +128,88 @@ export default function Review() {
 
           <div className="flow-root">
             <div className="-my-12 divide-y divide-gray-200">
-              {reviews.featured.map((review) => (
-                <div key={review.id} className="py-12">
-                  <div className="flex items-center">
-                    <img
-                      src={review.avatarSrc}
-                      alt={`${review.author}.`}
-                      className="h-12 w-12 rounded-full"
-                    />
-                    <div className="ml-4">
-                      <h4 className="text-sm font-bold text-gray-900">
-                        {review.author}
-                      </h4>
-                      <div className="mt-1 flex items-center">
-                        {[0, 1, 2, 3, 4].map((rating) => (
-                          <StarIcon
-                            key={rating}
-                            className={classNames(
-                              review.rating > rating
-                                ? "text-yellow-400"
-                                : "text-gray-300",
-                              "h-5 w-5 flex-shrink-0"
-                            )}
-                            aria-hidden="true"
-                          />
-                        ))}
+              {reviews &&
+                reviews.map((review) => (
+                  <div key={review.id} className="py-12">
+                    <div className="flex items-center">
+                      <img
+                        src={review.author.image}
+                        alt={`${review.author.name}.`}
+                        className="h-12 w-12 rounded-full"
+                      />
+                      <div className="ml-4">
+                        <h4 className="text-sm font-bold text-gray-900">
+                          {review.author.name}
+                        </h4>
+                        <div className="mt-1 flex items-center">
+                          {[0, 1, 2, 3, 4].map((rating) => (
+                            <StarIcon
+                              key={rating}
+                              className={classNames(
+                                review.rating > rating
+                                  ? "text-yellow-400"
+                                  : "text-gray-300",
+                                "h-5 w-5 flex-shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                          ))}
+                        </div>
+                        <p className="sr-only">
+                          {review.rating} out of 5 stars
+                        </p>
                       </div>
-                      <p className="sr-only">{review.rating} out of 5 stars</p>
                     </div>
-                  </div>
 
-                  <div
-                    className="mt-4 space-y-6 text-base italic text-gray-600"
-                    dangerouslySetInnerHTML={{ __html: review.content }}
-                  />
-                </div>
-              ))}
+                    <div
+                      className="mt-4 space-y-6 text-base italic text-gray-600"
+                      dangerouslySetInnerHTML={{ __html: review.content }}
+                    />
+                  </div>
+                ))}
             </div>
           </div>
         </div>
       </div>
+
+      <nav
+        className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+        aria-label="Pagination"
+      >
+        <div className="hidden sm:block">
+          <p className="text-sm text-gray-700">
+            Showing{" "}
+            <span className="font-medium">
+              {(currentPage - 1) * reviewsPerPage + 1}
+            </span>{" "}
+            to{" "}
+            <span className="font-medium">
+              {reviews && (currentPage - 1) * reviewsPerPage + reviews.length}
+            </span>{" "}
+            of{" "}
+            <span className="font-medium">
+              {reviewStatic.reviewCount}
+              {" reviews"}
+            </span>{" "}
+          </p>
+        </div>
+        <div className="flex flex-1 justify-between sm:justify-end">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 enabled:hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-40"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 enabled:hover:bg-gray-50 disabled:opacity-40 focus-visible:outline-offset-0"
+          >
+            Next
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }

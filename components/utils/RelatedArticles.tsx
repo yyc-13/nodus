@@ -17,7 +17,7 @@ export default function RelatedArticles() {
     cards.push(
       <React.Fragment key={i}>
         <VideoCard />
-        <AudioCard />
+        <AudioCard basicContent={undefined} />
         <ImageCard />
       </React.Fragment>
     );

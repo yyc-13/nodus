@@ -1,4 +1,6 @@
 import { FileType, PrismaClient } from "@prisma/client";
+import { subMonths } from "date-fns";
+import { getMainSupabaseUrl } from "./utils/SupabaseUrl";
 
 let prisma: PrismaClient;
 
@@ -111,4 +113,206 @@ export async function storeSample({
   });
   console.log("sample", sample);
   return sample;
+}
+
+export async function membershipPurchased(userId) {
+  // Subtract the specified number of months from the given date.
+  const oneMontAgo = subMonths(new Date(), 1);
+  const memberships = await prisma.purchaseMembership.findMany({
+    where: {
+      buyerId: userId,
+      createdAt: {
+        gte: oneMontAgo,
+      },
+    },
+    include: {
+      membership: true,
+    },
+  });
+  return memberships;
+}
+
+export async function contentMemberships({ contentId }) {
+  const memberships = await prisma.contentMembership.findMany({
+    where: {
+      contentId: contentId,
+    },
+    include: {
+      membership: true,
+    },
+  });
+
+  return memberships;
+}
+
+export async function isContentFree({ contentId }) {
+  const isFree = await prisma.content.findUnique({
+    where: {
+      id: contentId,
+    },
+    select: {
+      free: true,
+    },
+  });
+  return isFree;
+}
+
+export async function getMainFile({ contentId }) {
+  const mainFile = await prisma.content.findUnique({
+    where: {
+      id: contentId,
+    },
+    select: {
+      files: true,
+      description: true,
+      free: true,
+      price: true,
+      memberships: true,
+      fileType: true,
+    },
+  });
+
+  if (!mainFile) {
+    throw new Error("Can't find main file");
+  }
+  console.log(mainFile?.files[0], mainFile.fileType);
+
+  const mainFileUrl = await getMainSupabaseUrl(
+    mainFile?.files[0],
+    mainFile.fileType
+  );
+  mainFile.files = [mainFileUrl];
+
+  return mainFile;
+}
+
+export async function didUserPurchasedContent(contentId, userId) {
+  const userPurchasedContent = await prisma.purchaseContent.findMany({
+    where: {
+      contentId: contentId,
+      buyerId: userId,
+    },
+  });
+  return userPurchasedContent;
+}
+
+export async function doesUserHaveCorrespondingMembership(
+  userId,
+  membershipsOfContent
+) {
+  const oneMontAgo = subMonths(new Date(), 1);
+  const memberships = await prisma.purchaseMembership.findMany({
+    where: {
+      buyerId: userId,
+      membershipId: {
+        in: membershipsOfContent,
+      },
+      createdAt: {
+        gte: oneMontAgo,
+      },
+    },
+    include: {
+      membership: true,
+    },
+  });
+  return memberships;
+}
+
+export async function isUserTheCreator(contentId, userId) {
+  const content = await prisma.content.findUnique({
+    where: {
+      id: contentId,
+    },
+  });
+
+  return content && content.creatorId === userId;
+}
+
+export async function fetchContentFromDb(startIndex, pageSize) {
+  const contents = await prisma.content.findMany({
+    skip: startIndex,
+    take: pageSize,
+    orderBy: {
+      createdAt: "desc", // ordering by creation date, most recent first
+    },
+    select: {
+      id: true,
+      title: true,
+      free: true,
+      price: true,
+      fileType: true,
+      tags: true,
+      mainCategory: true,
+      secondCategory: true,
+      freeSample: true,
+      creatorId: true,
+      createdAt: true,
+      updatedAt: true,
+      sample: true,
+
+      card: true,
+      creator: {
+        select: {
+          id: true,
+          userName: true,
+          userId: true,
+          pfp: true,
+          introduction: true,
+        },
+      },
+      memberships: true,
+      purchases: true,
+      reviews: true,
+      questions: true,
+    },
+  });
+
+  return contents;
+}
+
+export async function getCommentsByContentId(contentId) {
+  const comments = await prisma.comment.findMany({
+    where: {
+      contentId: contentId,
+    },
+    select: {
+      creator: true,
+      text: true,
+      id: true,
+    },
+  });
+
+  return comments;
+}
+
+export async function createComment(contentId, text, userId) {
+  const result = await prisma.comment.create({
+    data: {
+      contentId: contentId,
+      text: text,
+      creatorId: userId,
+    },
+  });
+  return result;
+}
+
+export async function deleteComment(commentId) {
+  const result = await prisma.comment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+  return result;
+}
+
+export async function updateComment(commentId, text) {
+  const result = await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      text: text,
+    },
+  });
+  return result;
 }
