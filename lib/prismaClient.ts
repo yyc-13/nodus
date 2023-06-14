@@ -24,7 +24,6 @@ const fileTypeMapping = {
 };
 
 export async function getUser(email: string) {
-  console.log(email);
   const user = await prisma.user.findUnique({
     where: {
       email: email,
@@ -69,7 +68,7 @@ export async function storeContent({
       },
     },
   });
-  console.log("store Content result", content);
+
   return content;
 }
 
@@ -90,7 +89,7 @@ export async function storeCard({
       contentId: contentId,
     },
   });
-  console.log("store card result", card);
+
   return card;
 }
 
@@ -111,7 +110,7 @@ export async function storeSample({
       contentId: contentId,
     },
   });
-  console.log("sample", sample);
+
   return sample;
 }
 
@@ -175,7 +174,6 @@ export async function getMainFile({ contentId }) {
   if (!mainFile) {
     throw new Error("Can't find main file");
   }
-  console.log(mainFile?.files[0], mainFile.fileType);
 
   const mainFileUrl = await getMainSupabaseUrl(
     mainFile?.files[0],
@@ -315,4 +313,109 @@ export async function updateComment(commentId, text) {
     },
   });
   return result;
+}
+
+export async function createCollection(
+  collectionName,
+  collectionDescription,
+  userId,
+  coverPhoto,
+  collectionPrivate
+) {
+  const result = await prisma.collection.create({
+    data: {
+      name: collectionName,
+      description: collectionDescription,
+      userId: userId,
+      coverPhoto: coverPhoto,
+      private: collectionPrivate,
+    },
+  });
+  return result;
+}
+
+export async function getCollectionsByUserId(userId) {
+  const collections = await prisma.collection.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      coverPhoto: true,
+      createdAt: true,
+      updatedAt: true,
+      private: true,
+      user: {
+        select: {
+          userId: true,
+          userName: true,
+          pfp: true,
+        },
+      },
+      contents: true,
+    },
+  });
+
+  return collections;
+}
+
+export async function getContentsByUserId(userId) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+
+    select: {
+      id: true,
+      userName: true,
+      userId: true,
+      introduction: true,
+      pfp: true,
+      coverPhoto: true,
+      contents: {
+        select: {
+          id: true,
+          title: true,
+          free: true,
+          price: true,
+          fileType: true,
+          tags: true,
+          mainCategory: true,
+          secondCategory: true,
+          freeSample: true,
+          card: true,
+          sample: true,
+          memberships: true,
+          createdAt: true,
+          creator: {
+            select: {
+              userName: true,
+              userId: true,
+              introduction: true,
+              pfp: true,
+              coverPhoto: true,
+            },
+          },
+
+          creatorId: true,
+        },
+      },
+      purchases: true,
+      membershipsPurchased: true,
+      membershipsCreated: true,
+      collectionLists: true,
+    },
+  });
+  return user;
+}
+
+export async function getAllUserId() {
+  const userIds = await prisma.user.findMany({
+    select: {
+      id: true,
+    },
+  });
+  return userIds;
 }

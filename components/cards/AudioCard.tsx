@@ -1,35 +1,9 @@
 import BreadCrumb from "../utils/BreadCrumb";
-import BookmarkModal from "../utils/BookmarkModal";
-import { useEffect, useState } from "react";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+
 import UserMedia from "./components/UserMedia";
 import CardTags from "./components/CardTags";
 import { createMultilineEllipsisStyle } from "../../lib/MultilineEllipsis";
 import TitleAndBookmark from "./components/TitleAndBookmark";
-import { getPublicSupabaseUrl } from "@/lib/utils/SupabaseUrl";
-
-const data = {
-  title: "Title placeholder",
-  description:
-    "description placeholder cal order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological ordecal order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological ordecal order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order,Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological orde",
-  file: "./public/temp/image.png",
-  fileType: "audio",
-  tags: [
-    { id: "valorant", text: "valorant" },
-    { id: "dog", text: "dog" },
-    { id: "dog", text: "dog" },
-    { id: "dog", text: "dog" },
-  ],
-  category: ["main category", "category"],
-  user: {
-    name: "Roel Aufderehar",
-    date: "Mar 16, 2020",
-
-    donate: 0,
-    view: 0,
-  },
-  preview: false,
-};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");

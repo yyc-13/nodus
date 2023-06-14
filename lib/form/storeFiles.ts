@@ -19,7 +19,7 @@ const storeFiles = async (files, title: string, fileType) => {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
   const { fileUrls } = await res.json();
-
+  console.log("fileUrls", fileUrls);
   return fileUrls;
 };
 

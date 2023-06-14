@@ -40,7 +40,7 @@ model Content {
   purchases   PurchaseContent[]
   reviews     Review[]
   questions   Question[]
-  favorites   Favorite[]
+   collections CollectionContent[]
   comments    Comment[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -53,6 +53,8 @@ model Comment {
   contentId String
   creator     User @relation(fields:[creatorId],references: [id])
   creatorId   String 
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Membership{
@@ -73,7 +75,8 @@ model ContentMembership {
   content      Content     @relation(fields: [contentId], references: [id])
   membershipId String
   membership   Membership  @relation(fields: [membershipId], references: [id])
-  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   @@id([contentId, membershipId])
 }
 
@@ -181,6 +184,7 @@ model Message {
   conversationId String
   sender        User          @relation(fields: [senderId], references: [id])
   senderId      String
+  
 }
 
 //  User Auth
@@ -235,14 +239,14 @@ model User {
   conversations Conversation[] 
   questions     Question[]
   answers       Answer[]
- favoriteLists   Favorite[]
+ collectionLists   Collection[]
  comment      Comment[]
  // additional user info
  userName      String @default("New User")
   userId        String @default(cuid())
   introduction  String?
-  pfp           String @default("https://feletzxvqxgytpgcgvkw.supabase.co/storage/v1/object/public/public/Default_pfp.png")
-  coverPhoto    String @default("https://feletzxvqxgytpgcgvkw.supabase.co/storage/v1/object/public/public/default-cover.jpeg")
+  pfp           String @default("default-pfp.jpeg")
+  coverPhoto    String @default("default-cover.jpeg")
   balance       Int @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -250,11 +254,26 @@ model User {
 
 
 
-// favorites
-model Favorite {
+// collections
+model Collection {
   id        String   @id @default(cuid())
-  name      String?
+  name      String   @default("default name")
+  coverPhoto String? @default("default.png")
+  description String?
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  contents  Content[] 
+  private Boolean
+  contents  CollectionContent[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model CollectionContent {
+  collection   Collection  @relation(fields: [collectionId], references: [id])
+  collectionId String
+  content      Content     @relation(fields: [contentId], references: [id])
+  contentId    String
+createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  @@id([collectionId, contentId])
 }

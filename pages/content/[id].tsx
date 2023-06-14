@@ -20,13 +20,7 @@ import { getPublicSupabaseUrl } from "@/lib/utils/SupabaseUrl";
 
 import Review from "@/components/content-page/components/Review";
 
-const dataFormatter = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  timeZone: "UTC",
-});
-
+import dateFormatter from "@/lib/dateFormatter";
 export const getStaticPaths: GetStaticPaths = async () => {
   // Fetch all content IDs
 
@@ -95,8 +89,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     return { notFound: true };
   }
 
-  content.createdAt = dataFormatter.format(new Date(content.createdAt));
-  content.updatedAt = dataFormatter.format(new Date(content.updatedAt));
+  content.createdAt = dateFormatter.format(new Date(content.createdAt));
+  content.updatedAt = dateFormatter.format(new Date(content.updatedAt));
   if (content.card.fileType !== "TEXT") {
     content.card.file = await getPublicSupabaseUrl(
       "card",

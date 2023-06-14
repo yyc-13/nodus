@@ -132,3 +132,20 @@ export const userInfoSchema = yup
       .max(300, "Description is too long - should be 300 chars maximum."),
   })
   .required();
+
+export const collectionSchema = yup
+  .object()
+  .shape({
+    collectionName: yup
+      .string()
+      .required("Please enter a collection name")
+      .min(1, "Title is too short - should be 1 chars minimum.")
+      .max(50, "Title is too long - should be 50 chars maximum."),
+    collectionDescription: yup
+      .string()
+      .notRequired()
+      .min(1, "Description is too short - should be 1 chars minimum.")
+      .max(300, "Description is too long - should be 300 chars maximum."),
+    private: yup.boolean().required("Please select if it's private."),
+  })
+  .required();

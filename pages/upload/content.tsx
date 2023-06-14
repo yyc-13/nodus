@@ -91,7 +91,6 @@ export default function ContentForm() {
       }
 
       data = { ...data, ...fileUrls };
-      console.log("form data to be sent in /upload/content", data);
 
       const res = await fetch("/api/content/create", {
         method: "POST",
@@ -105,7 +104,7 @@ export default function ContentForm() {
         throw new Error(`HTTP error! status:${res.status}`);
       }
       const result = await res.json();
-      console.log("result after form submission", result);
+
       router.push(`/content/${result.id}`);
     } catch (error) {
       console.error("An error occurred during form submission:", error);

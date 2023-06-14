@@ -1,16 +1,6 @@
-import { FilePond, registerPlugin } from "react-filepond";
-
-import "filepond/dist/filepond.min.css";
 import { Document, Page, pdfjs } from "react-pdf";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
-import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import { XMarkIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import {
   LegacyRef,
   MutableRefObject,
@@ -18,14 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { XMarkIcon, PhotoIcon } from "@heroicons/react/20/solid";
-
-registerPlugin(
-  FilePondPluginImageExifOrientation,
-  FilePondPluginImagePreview,
-  FilePondPluginFileValidateType,
-  FilePondPluginFileValidateSize
-);
+import FilePond from "@/lib/filePondSetup";
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const fileTypesDic = {
   audio: ["audio/mpeg", "audio/wav"],
