@@ -10,6 +10,7 @@ function classNames(...classes) {
 }
 
 export default function AudioCard({ basicContent }) {
+  console.log("basicContent in audiocard", basicContent);
   if (!basicContent) {
     return <div>Loading...</div>;
   }

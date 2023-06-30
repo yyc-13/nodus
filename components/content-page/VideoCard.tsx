@@ -1,10 +1,16 @@
+import { useSession } from "next-auth/react";
 import UserMedia from "./components/UserMedia";
+import ContentControls from "./components/contentControls";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function ImageCard({ basicContent }) {
+  const { data } = useSession();
+  const viewer = data?.user;
+  const isCreator =
+    viewer?.userId == basicContent.creator.userId ? true : false;
   if (!basicContent) {
     return <div>Loading...</div>;
   }
@@ -53,6 +59,7 @@ export default function ImageCard({ basicContent }) {
       </div>
       {/* user media */}
       <UserMedia user={basicContent.creator} />
+      <ContentControls isCreator={isCreator} contentId={basicContent.id} />
     </article>
   );
 }

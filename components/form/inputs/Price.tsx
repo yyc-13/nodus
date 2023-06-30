@@ -29,7 +29,7 @@ export default function PriceInput({
   }, [watchMemberships, watchPrice, setValue]);
 
   return (
-    <div className="mt-4 sm:grid sm:grid-cols-2 sm:items-start sm:gap-4 sm:gap-y-8 sm:border-t sm:border-gray-200 sm:py-5 flex flex-col gap-y-2">
+    <div className="mt-4 sm:grid sm:grid-cols-2 sm:items-start sm:gap-4 sm:gap-y-8 sm:border-t sm:border-gray-200 sm:py-5 flex flex-col gap-y-8">
       <div className="relative flex gap-x-3 h-6 items-center">
         <div className="flex h-6 items-center">
           <input
@@ -87,7 +87,7 @@ export default function PriceInput({
                 id="price"
                 value={free ? 0 : price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="disabled:opacity-75 block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="disabled:opacity-75 block w-full min-w-0 flex-1 rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 disabled={free}
               ></input>
             </div>
@@ -112,11 +112,6 @@ export default function PriceInput({
               memberships
             </label>
           </div>
-          {errors.memberships?.message && (
-            <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
-              {errors.memberships?.message}
-            </p>
-          )}
         </div>
         <Controller
           name="memberships"
@@ -137,6 +132,11 @@ export default function PriceInput({
             />
           )}
         />
+        {errors.memberships?.message && (
+          <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
+            {errors.memberships?.message}
+          </p>
+        )}
       </div>
     </div>
   );

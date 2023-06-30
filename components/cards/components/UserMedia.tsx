@@ -2,16 +2,9 @@ import {
   CircleStackIcon,
   CursorArrowRaysIcon,
 } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
-const data = {
-  name: "Roel Aufderehar",
-  date: "Mar 16, 2020",
-
-  donate: 0,
-  view: 0,
-};
-
-export default function UserMedia({ user = data }) {
+export default function UserMedia({ user }) {
   user.donate = 0;
   user.view = 0;
   user.date = new Date().toLocaleDateString("en-US", {
@@ -23,18 +16,18 @@ export default function UserMedia({ user = data }) {
   return (
     <div className="mt-3 flex justify-between items-center  border-t border-gray-900/5 pt-">
       <div className="relative flex items-center gap-x-4">
-        <a href="#">
+        <Link href={`/user/${user.userId}`}>
           <span className="sr-only">{user.name}</span>
           <img className="h-10 w-10 rounded-full" src={user.image} alt="" />
-        </a>
+        </Link>
         <div className="text-sm leading-6">
           <p className="font-semibold text-gray-900">
-            <a href="#">
+            <Link href={`/user/${user.userId}`}>
               <span className="absolute inset-0"></span>
               {user.name}
-            </a>
+            </Link>
           </p>
-          <p className="text-gray-600">Co-Founder / CTO</p>
+          <p className="text-gray-600">{user.userId}</p>
           <div className="flex space-x-1 text-sm text-gray-700 dark:text-gray-400">
             <time dateTime="2020-03-16">{user.date}</time>
             <span aria-hidden="true">·</span>

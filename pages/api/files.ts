@@ -52,13 +52,14 @@ export default async function handler(
     case "POST":
       try {
         const session = await getSession({ req });
-
+        console.log("session", session);
+        console.log("post 0");
         if (!session) {
           res.status(401).send("Unauthorized");
           return;
         }
         const form = new formidable.IncomingForm();
-
+        console.log("post 1");
         // chagne file name to uuid
         form.on("fileBegin", (name, file) => {
           const uniqueFileName = uuidv4();
@@ -66,20 +67,24 @@ export default async function handler(
 
           file.newFilename = `${uniqueFileName}${fileExtension}`;
         });
-
+        console.log("post 2");
         form.parse(req, async (err, fields, files) => {
+          if (err) {
+            res.status(500).json({ error: "Error parsing form data." });
+            return;
+          }
           const { title, fileType } = fields;
           const fileUrls = await uploadFiles({ files, title, fileType });
-
+          console.log("post 3");
           res.status(200).json({ fileUrls: fileUrls });
         });
+        console.log("post 4");
       } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Error uploading file" });
       }
 
       break;
-
     default:
       res.setHeader("Allow", ["GET", "POST"]);
       res.status(405).end(`Method ${method} Not Allowed`);

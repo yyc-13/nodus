@@ -1,14 +1,22 @@
 import UserMedia from "./components/UserMedia";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import ContentControls from "./components/contentControls";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function AudioCard({ basicContent }) {
+  const { data } = useSession();
+  const viewer = data?.user;
+  const isCreator =
+    viewer?.userId == basicContent.creator.userId ? true : false;
   if (!basicContent) {
     return <div>Loading...</div>;
   }
 
+  console.log("basicContent in content-page audiocard", basicContent);
   return (
     <article
       key={basicContent.id}
@@ -42,10 +50,10 @@ export default function AudioCard({ basicContent }) {
       </div>
       <div className="group relative">
         <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
-          <a href="#">
+          <Link href={`/content/${basicContent.id}`}>
             <span className="absolute inset-0" />
             {basicContent.title}
-          </a>
+          </Link>
         </h3>
         <p className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600">
           {basicContent.card.description}
@@ -53,6 +61,7 @@ export default function AudioCard({ basicContent }) {
       </div>
       {/* user media */}
       <UserMedia user={basicContent.creator} />
+      <ContentControls isCreator={isCreator} contentId={basicContent.id} />
     </article>
   );
 }

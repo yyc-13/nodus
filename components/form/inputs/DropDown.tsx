@@ -32,7 +32,9 @@ export default function DropDown({ title, register, errors, setFileType }) {
             {title == "cardFileType" ? " text" : ".pdf"}
           </option>
           <option value="video">video(.mp4, .webm)</option>
-          <option value="image">image(.png, .jpeg, .webp)</option>
+          {title == "cardFileType" && (
+            <option value="image">image(.png, .jpeg, .webp)</option>
+          )}
         </select>
       </div>
       {errors[title]?.message && (

@@ -51,16 +51,16 @@ export async function storeContent({
   const enumFileType = fileTypeMapping[fileType.toLowerCase()];
   const content = await prisma.content.create({
     data: {
-      title: title,
-      description: description,
-      free: free,
-      price: price,
+      title,
+      description,
+      free,
+      price,
       fileType: enumFileType,
-      files: files,
-      tags: tags,
-      mainCategory: mainCategory,
-      secondCategory: secondCategory,
-      freeSample: freeSample,
+      files,
+      tags,
+      mainCategory,
+      secondCategory,
+      freeSample,
       creator: {
         connect: {
           id: creatorId,
@@ -80,13 +80,17 @@ export async function storeCard({
   contentId,
 }) {
   const enumFileType = fileTypeMapping[cardFileType.toLowerCase()];
+  console.log("cardFileTYpe", cardFileType);
+  if (cardFileType !== "text" && !cardFile) {
+    throw new Error(`File required for file type ${cardFileType}`);
+  }
   const card = await prisma.card.create({
     data: {
-      title: title,
+      title,
       description: cardDescription,
       fileType: enumFileType,
       file: cardFile,
-      contentId: contentId,
+      contentId,
     },
   });
 
@@ -103,11 +107,11 @@ export async function storeSample({
   const enumFileType = fileTypeMapping[sampleFileType.toLowerCase()];
   const sample = await prisma.sample.create({
     data: {
-      title: title,
+      title,
       description: sampleDescription,
       fileType: enumFileType,
       files: sampleFileUrls,
-      contentId: contentId,
+      contentId,
     },
   });
 
@@ -364,7 +368,7 @@ export async function getCollectionsByUserId(userId) {
 export async function getContentsByUserId(userId) {
   const user = await prisma.user.findUnique({
     where: {
-      id: userId,
+      userId: userId,
     },
 
     select: {
@@ -374,6 +378,13 @@ export async function getContentsByUserId(userId) {
       introduction: true,
       pfp: true,
       coverPhoto: true,
+      UserSocial: {
+        select: {
+          platform: true,
+          handle: true,
+        },
+      },
+
       contents: {
         select: {
           id: true,
@@ -414,8 +425,216 @@ export async function getContentsByUserId(userId) {
 export async function getAllUserId() {
   const userIds = await prisma.user.findMany({
     select: {
-      id: true,
+      userId: true,
     },
   });
   return userIds;
+}
+
+export async function doesUserExist(userID) {
+  const users = await prisma.user.findMany({
+    where: {
+      userId: userID,
+    },
+  });
+  return users;
+}
+
+export async function updateUser(
+  userName,
+  userId,
+  introduction,
+  pfp,
+  coverPhoto,
+  id
+) {
+  const result = await prisma.user.update({
+    where: {
+      id: id,
+    },
+    data: {
+      userName: userName,
+      userId: userId,
+      introduction: introduction,
+      pfp: pfp,
+      coverPhoto: coverPhoto,
+    },
+  });
+  return result;
+}
+
+export async function findExistUserSocial(id, platform) {
+  const result = await prisma.userSocial.findUnique({
+    where: {
+      userId_platform: {
+        userId: id,
+        platform: platform,
+      },
+    },
+  });
+  return result;
+}
+
+export async function updateUserSocial(recordId, handle) {
+  const result = await prisma.userSocial.update({
+    where: {
+      id: recordId,
+    },
+    data: {
+      handle: handle,
+    },
+  });
+  return result;
+}
+
+export async function createUserSocial(id, platform, handle) {
+  const result = await prisma.userSocial.create({
+    data: {
+      user: {
+        connect: {
+          id: id,
+        },
+      },
+      platform: platform,
+      handle: handle,
+    },
+  });
+  return result;
+}
+
+export async function getMembershipsByUserId(userId) {
+  const result = await prisma.membership.findMany({
+    where: {
+      creatorId: userId,
+    },
+  });
+  return result;
+}
+
+export async function createMembership(about, contents, name, price, userId) {
+  const result = await prisma.membership.create({
+    data: {
+      creator: {
+        connect: {
+          id: userId,
+        },
+      },
+      description: about,
+      name: name,
+      price: price,
+      content: {
+        create: contents.map((content) => ({
+          contentId: content.value,
+        })),
+      },
+    },
+  });
+  return result;
+}
+
+export async function getContentByContentId(contentId) {
+  const content = await prisma.content.findUnique({
+    where: {
+      id: contentId,
+    },
+
+    select: {
+      id: true,
+      title: true,
+      free: true,
+      price: true,
+      fileType: true,
+      tags: true,
+      mainCategory: true,
+      secondCategory: true,
+      freeSample: true,
+      creatorId: true,
+      createdAt: true,
+      updatedAt: true,
+      sample: true,
+
+      card: true,
+      creator: {
+        select: {
+          id: true,
+          userName: true,
+          userId: true,
+          pfp: true,
+          introduction: true,
+        },
+      },
+      memberships: true,
+      purchases: true,
+      reviews: true,
+      questions: true,
+    },
+  });
+  return content;
+}
+
+export async function getFullContentByContentId({ contentId }) {
+  const content = await prisma.content.findUnique({
+    where: {
+      id: contentId,
+    },
+  });
+  return content;
+}
+
+export async function deleteContentByContentId(contentId) {
+  const result = await prisma.content.delete({
+    where: {
+      id: contentId,
+    },
+  });
+  return result;
+}
+
+export async function updateContentByContentId({
+  contentId,
+  contentData,
+  sampleData,
+  cardData,
+}) {
+  const result = await prisma.content.update({
+    where: {
+      id: contentId,
+    },
+    data: {
+      ...contentData,
+      sample:
+        sampleData == null
+          ? { delete: true }
+          : { update: { data: sampleData } },
+      card:
+        cardData == null ? { delete: true } : { update: { data: cardData } },
+    },
+    include: {
+      sample: true,
+      card: true,
+    },
+  });
+  return result;
+}
+
+export async function getRegisteredWalletByUserId(userId) {
+  const result = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      walletAddress: true,
+    },
+  });
+  return result;
+}
+
+export async function updateWalletAddressByUserID(userId, walletAddress) {
+  const result = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      walletAddress: walletAddress,
+    },
+  });
+  return result;
 }

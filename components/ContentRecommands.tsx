@@ -1,8 +1,8 @@
 import useSWRInfinite from "swr/infinite";
-import AudioCard from "../content-page/AudioCard";
-import ImageCard from "../content-page/ImageCard";
-import VideoCard from "../content-page/VideoCard";
-import TextCard from "../content-page/TextCard";
+import AudioCard from "./content-page/AudioCard";
+import ImageCard from "./content-page/ImageCard";
+import VideoCard from "./content-page/VideoCard";
+import TextCard from "./content-page/TextCard";
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -10,7 +10,7 @@ const fetcher = async (url) => {
   return res.json();
 };
 
-export default function Basic() {
+export default function ContentRecommands() {
   const { data, error, mutate, size, setSize, isValidating } = useSWRInfinite(
     (index) => `/api/content/content?page=${index + 1}`,
     fetcher
@@ -21,7 +21,7 @@ export default function Basic() {
   // Concatenate all the loaded 'contents' arrays to a big one
   const contents = data ? [].concat(...data) : [];
 
-  console.log("data from index", data);
+  console.log("data,content from index", data, contents);
 
   return (
     <div className="bg-white py-24 sm:py-32">
@@ -33,6 +33,9 @@ export default function Basic() {
         </div>
         <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
           {contents.map((content, index) => {
+            if (!content.card || !content.card.fileType) {
+              return null;
+            }
             switch (content.card.fileType) {
               case "AUDIO":
                 // Return an audio player for audio files

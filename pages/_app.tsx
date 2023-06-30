@@ -11,6 +11,7 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   const router = useRouter();
+
   return (
     <>
       <SessionProvider session={session}>

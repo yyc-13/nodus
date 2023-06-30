@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { GetStaticProps, GetStaticPaths } from "next";
-import prisma from "@/lib/prismaClient";
+import prisma, { getContentByContentId } from "@/lib/prismaClient";
 import useSWR from "swr";
 
 import {
@@ -16,11 +16,12 @@ import ArticleCard from "@/components/cards/TextCard";
 import CommentBlock from "@/components/content-page/components/comment/CommentBlock";
 import RelatedArticles from "@/components/utils/RelatedArticles";
 import ContentTabs from "@/components/content-page/components/ContentTabs";
-import { getPublicSupabaseUrl } from "@/lib/utils/SupabaseUrl";
 
 import Review from "@/components/content-page/components/Review";
 
 import dateFormatter from "@/lib/dateFormatter";
+import ContentRecommands from "@/components/ContentRecommands";
+
 export const getStaticPaths: GetStaticPaths = async () => {
   // Fetch all content IDs
 
@@ -36,7 +37,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   // Map content IDs to paths
 
   const paths = contentIDs.map((id) => ({
-    params: { id: id },
+    params: { contentId: id },
   }));
 
   return { paths, fallback: false };
@@ -45,69 +46,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   // Fetch content data by ID
 
-  const content = await prisma.content
-    .findUnique({
-      where: {
-        id: params.id,
-      },
-
-      select: {
-        id: true,
-        title: true,
-        free: true,
-        price: true,
-        fileType: true,
-        tags: true,
-        mainCategory: true,
-        secondCategory: true,
-        freeSample: true,
-        creatorId: true,
-        createdAt: true,
-        updatedAt: true,
-        sample: true,
-
-        card: true,
-        creator: {
-          select: {
-            id: true,
-            userName: true,
-            userId: true,
-            pfp: true,
-            introduction: true,
-          },
-        },
-        memberships: true,
-        purchases: true,
-        reviews: true,
-        questions: true,
-      },
-    })
-    .catch((err) => console.log(err));
+  let content = await getContentByContentId(params.contentId);
   // If the content doesn't exist, return notFound: true to indicate a 404 status
 
   if (!content) {
     return { notFound: true };
   }
 
-  content.createdAt = dateFormatter.format(new Date(content.createdAt));
-  content.updatedAt = dateFormatter.format(new Date(content.updatedAt));
-  if (content.card.fileType !== "TEXT") {
-    content.card.file = await getPublicSupabaseUrl(
-      "card",
-      content.card.file,
-      content.card.fileType
-    );
-  }
-
-  if (content.freeSample && content.sample.files.length > 0) {
-    const filePublicUrl = await getPublicSupabaseUrl(
-      "sample",
-      content.sample.files[0],
-      content.sample.fileType
-    );
-    content.sample.files = [filePublicUrl];
-  }
-
+  content = JSON.parse(JSON.stringify(content));
   return {
     props: {
       content,
@@ -118,6 +64,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 export default function ContentPage({ content }) {
+  console.log("content in /content/[id].tsx", content);
   return (
     <div className="mx-auto   max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
       <div className="lg:grid lg:auto-rows-min lg:grid-cols-12 lg:gap-x-8">
@@ -178,20 +125,15 @@ export default function ContentPage({ content }) {
           {/* {!content.free && <Review />} */}
         </div>
         <div className="lg:col-span-4 flex flex-col gap-y-4 pt-6 md:pt-10">
-          {/* <TagsBlock /> */}
+          {/* related contents */}
           <div className="border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-6   overflow-hidden">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              {content.creator.name}
-            </h2>
-            <div className="mt-4 space-y-10 lg:mt-8 lg:space-y-20">
-              <ArticleCard />
-              <ArticleCard />
-            </div>
+            <div className="mt-4 space-y-10 lg:mt-8 lg:space-y-20"></div>
           </div>
         </div>
       </div>
 
       {/* <RelatedArticles /> */}
+      <ContentRecommands />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import BasicContentLayout from "@/components/layout/Index";
+import ContentRecommands from "@/components/ContentRecommands";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="#" />
       </Head>
       <main>
-        <BasicContentLayout />
+        <ContentRecommands />
       </main>
     </>
   );

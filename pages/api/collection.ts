@@ -4,7 +4,7 @@ import {
   getCollectionsByUserId,
 } from "@/lib/prismaClient";
 import supabase from "@/lib/supabaseClient";
-import { getPublicSupabaseUrl } from "@/lib/utils/SupabaseUrl";
+
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 
@@ -32,12 +32,7 @@ export default async function handler(
 
         const collections = await getCollectionsByUserId(userId);
         const updatedCollections = collections.map(async (collection) => {
-          const fileUrl = await getPublicSupabaseUrl(
-            "Collection Cover",
-            collection.coverPhoto,
-            "image"
-          );
-          collection.coverPhoto = fileUrl;
+          // collection.coverPhoto = fileUrl;
           return collection;
         });
 
@@ -74,7 +69,7 @@ export default async function handler(
       }
       break;
     default:
-      res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
+      res.setHeader("Allow", ["GET", "POST"]);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }

@@ -57,8 +57,14 @@ export default function ContentForm() {
 
   const [tags, setTags] = useState([]);
 
+  const mainFileRef = useRef();
+  const cardFileRef = useRef();
+  const sampleFileRef = useRef();
+
   const onSubmit = async (data) => {
     try {
+      console.log("data on submit", data);
+
       if (prodFiles.length == 0) {
         setNoProductFile(true);
         return;
@@ -71,6 +77,7 @@ export default function ContentForm() {
         setNoSampleFile(true);
         return;
       }
+      console.log(1);
       const prodFileUrls = await storeFiles(prodFiles, "prod", productFileType);
 
       const cardFileUrls = await storeFiles(cardFiles, "card", cardFileType);
@@ -91,8 +98,8 @@ export default function ContentForm() {
       }
 
       data = { ...data, ...fileUrls };
-
-      const res = await fetch("/api/content/create", {
+      console.log(2);
+      const res = await fetch("/api/content/content", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +111,7 @@ export default function ContentForm() {
         throw new Error(`HTTP error! status:${res.status}`);
       }
       const result = await res.json();
-
+      console.log(3);
       router.push(`/content/${result.id}`);
     } catch (error) {
       console.error("An error occurred during form submission:", error);
@@ -139,6 +146,13 @@ export default function ContentForm() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [categoryModal1, categoryModal2]);
+
+  useEffect(() => {
+    if (sample == false) {
+      setSampleFiles(undefined);
+      setSampleFileType("");
+    }
+  }, [sample]);
 
   const categoryModalRef1 = useRef();
   const categoryModalRef2 = useRef();
@@ -233,6 +247,7 @@ export default function ContentForm() {
                       setFiles={setProdFiles}
                       register={register}
                       fileType={productFileType}
+                      ref={mainFileRef}
                     />
                     {noProductFile && (
                       <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
@@ -270,6 +285,7 @@ export default function ContentForm() {
                       setFiles={setCardFiles}
                       register={register}
                       fileType={cardFileType}
+                      ref={cardFileRef}
                     />
                     {noCardFile && (
                       <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
@@ -320,35 +336,38 @@ export default function ContentForm() {
                     </div>
                   </div>
                   {sample && (
-                    <DropDown
-                      title={"sampleFileType"}
-                      register={register}
-                      errors={errors}
-                      setFileType={setSampleFileType}
-                    />
-                  )}
-                  {sampleFileType && (
                     <>
-                      <FilesInput
-                        title="sample"
-                        files={sampleFiles}
-                        setFiles={setSampleFiles}
+                      <DropDown
+                        title={"sampleFileType"}
                         register={register}
-                        fileType={sampleFileType}
+                        errors={errors}
+                        setFileType={setSampleFileType}
                       />
-                      {noSampleFile && (
-                        <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
-                          please select a file.
-                        </p>
+
+                      {sampleFileType && (
+                        <>
+                          <FilesInput
+                            title="sample"
+                            files={sampleFiles}
+                            setFiles={setSampleFiles}
+                            register={register}
+                            fileType={sampleFileType}
+                            ref={sampleFileRef}
+                          />
+                          {noSampleFile && (
+                            <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
+                              please select a file.
+                            </p>
+                          )}
+                        </>
                       )}
+
+                      <Textarea
+                        title={"sampleDescription"}
+                        register={register}
+                        errors={errors}
+                      />
                     </>
-                  )}
-                  {sample && (
-                    <Textarea
-                      title={"sampleDescription"}
-                      register={register}
-                      errors={errors}
-                    />
                   )}
                 </>
               </div>
@@ -370,7 +389,6 @@ export default function ContentForm() {
                 </div>
               </div>
             </div>
-            {/* buttons */}
           </div>
         </div>
       </form>

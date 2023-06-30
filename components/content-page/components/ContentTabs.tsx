@@ -17,13 +17,37 @@ import NoAceess from "./NoAccess";
 const fileTypeCard = (fileType, basicContent) => {
   switch (fileType) {
     case "IMAGE":
-      return <ImageCard basicContent={basicContent} />;
+      return (
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-6 lg:py-8">
+          <div className="mx-auto  grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none ">
+            <ImageCard basicContent={basicContent} />
+          </div>
+        </div>
+      );
     case "VIDEO":
-      return <VideoCard basicContent={basicContent} />;
+      return (
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-6 lg:py-8">
+          <div className="mx-auto  grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none ">
+            <VideoCard basicContent={basicContent} />
+          </div>
+        </div>
+      );
     case "AUDIO":
-      return <AudioCard basicContent={basicContent} />;
+      return (
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-6 lg:py-8">
+          <div className="mx-auto  grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none ">
+            <AudioCard basicContent={basicContent} />
+          </div>
+        </div>
+      );
     case "TEXT":
-      return <TextCard basicContent={basicContent} />;
+      return (
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-6 lg:py-8">
+          <div className="mx-auto  grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none ">
+            <TextCard basicContent={basicContent} />
+          </div>
+        </div>
+      );
   }
 };
 
@@ -64,16 +88,21 @@ function classNames(...classes) {
 
 export default function ContentTabs({ basicContent }) {
   const router = useRouter();
-  const { id: contentId } = router.query;
+  const { contentId } = router.query;
   const { data: mainContent, error } = useSWR(
-    contentId ? `/api/content/${contentId}/main` : null,
+    contentId ? `/api/content/${contentId}/mainFile` : null,
     fetcher
   );
 
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
+  console.log(
+    "basicContent and mainContent",
+    basicContent,
+    mainContent,
+    contentId
+  );
   if (!mainContent) {
     return <div>Loading...</div>;
   }

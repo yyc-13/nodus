@@ -32,7 +32,7 @@ model Content {
   mainCategory String[]
   secondCategory String[]
   freeSample      Boolean
-  sample      Sample?
+  sample      Sample? 
   card        Card?
   creator      User     @relation(fields: [creatorId], references: [id])
   creatorId    String
@@ -49,9 +49,9 @@ model Content {
 model Comment {
   id String @id @default(cuid())
   text String
-  content Content @relation(fields: [contentId],references: [id])
+  content Content @relation(fields: [contentId],references: [id],onDelete: Cascade)
   contentId String
-  creator     User @relation(fields:[creatorId],references: [id])
+  creator     User @relation(fields:[creatorId],references: [id],onDelete: Cascade)
   creatorId   String 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -64,7 +64,7 @@ model Membership{
   price Int
   content ContentMembership[]
   purchased PurchaseMembership[]
-  creator     User @relation(fields:[creatorId],references: [id])
+  creator     User @relation(fields:[creatorId],references: [id],onDelete: Cascade)
   creatorId   String  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -72,9 +72,9 @@ model Membership{
 
 model ContentMembership {
   contentId    String
-  content      Content     @relation(fields: [contentId], references: [id])
+  content      Content     @relation(fields: [contentId], references: [id],onDelete: Cascade)
   membershipId String
-  membership   Membership  @relation(fields: [membershipId], references: [id])
+  membership   Membership  @relation(fields: [membershipId], references: [id],onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   @@id([contentId, membershipId])
@@ -87,7 +87,7 @@ model Card {
   description String
   fileType    FileType
   file         String?
-  content     Content  @relation(fields: [contentId], references: [id])
+  content     Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
   contentId   String @unique
 }
 
@@ -97,7 +97,7 @@ model Sample {
   description String
   fileType    FileType
   files         String[]
-  content     Content  @relation(fields: [contentId], references: [id])
+  content     Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
   contentId   String @unique
 }
 
@@ -109,7 +109,7 @@ model PurchaseContent {
   content   Content @relation(fields: [contentId], references: [id])
   contentId String
   price        Int
-  transactionId String?
+  transactionId String? @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -121,7 +121,7 @@ model PurchaseMembership{
   membershipId String 
   membership Membership @relation(fields: [membershipId], references: [id])
   price        Int
-  transactionId String?
+  transactionId String? @unique
   createdAt DateTime @default(now())
   
 }
@@ -129,11 +129,11 @@ model PurchaseMembership{
 // FAQ
 model Question {
   id          String    @id @default(cuid())
-  question     String @default("question placeholder")
+  question     String 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  content     Content   @relation(fields: [contentId], references: [id])
-  contentId   String @default("clgegusax018hlqyhold3j59r")
+  content     Content   @relation(fields: [contentId], references: [id],onDelete: Cascade)
+  contentId   String 
   author      User      @relation(fields: [authorId], references: [id])
   authorId    String
   answers     Answer[]
@@ -141,11 +141,11 @@ model Question {
 
 model Answer {
   id          String    @id @default(cuid())
-  answer     String @default("answer placeholder")
+  answer     String 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  question    Question  @relation(fields: [questionId], references: [id])
-  questionId  String  @default("clgegvloq01k5lqyhx4bq69bu")
+  question    Question  @relation(fields: [questionId], references: [id],onDelete: Cascade)
+  questionId  String  
   author      User      @relation(fields: [authorId], references: [id])
   authorId    String
 }
@@ -158,10 +158,10 @@ model Review {
   rating      Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  content     Content  @relation(fields: [contentId], references: [id])
-  contentId   String  @default("clgegusax018hlqyhold3j59r")
+  content     Content  @relation(fields: [contentId], references: [id],onDelete: Cascade)
+  contentId   String  
   user      User     @relation(fields: [userId], references: [id])
-  userId    String  @default("clgegrocx0000lqyh4g76e3qh")
+  userId    String  
 }
 
 
@@ -180,7 +180,7 @@ model Message {
   message       String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  conversation  Conversation  @relation(fields: [conversationId], references: [id])
+  conversation  Conversation  @relation(fields: [conversationId], references: [id],onDelete: Cascade)
   conversationId String
   sender        User          @relation(fields: [senderId], references: [id])
   senderId      String
@@ -228,6 +228,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  wallet       String?
   accounts      Account[]
   sessions      Session[]
   contents      Content[]
@@ -241,24 +242,36 @@ model User {
   answers       Answer[]
  collectionLists   Collection[]
  comment      Comment[]
+ UserSocial   UserSocial[]
  // additional user info
  userName      String @default("New User")
-  userId        String @default(cuid())
+  userId        String @default(cuid()) @unique
   introduction  String?
-  pfp           String @default("default-pfp.jpeg")
-  coverPhoto    String @default("default-cover.jpeg")
+  pfp           String @default("https://feletzxvqxgytpgcgvkw.supabase.co/storage/v1/object/public/public/default-pfp.jpeg")
+  coverPhoto    String @default("https://feletzxvqxgytpgcgvkw.supabase.co/storage/v1/object/public/public/default-cover.jpeg")
   balance       Int @default(0)
   createdAt     DateTime @default(now())
+  walletAddress String? @unique
   updatedAt     DateTime @updatedAt
 }
+model UserSocial {
+  id        String  @id @default(cuid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  platform  String
+  handle    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, platform])
 
+}
 
 
 // collections
 model Collection {
   id        String   @id @default(cuid())
-  name      String   @default("default name")
-  coverPhoto String? @default("default.png")
+  name      String   @default("unnamed")
+  coverPhoto String? @default("https://feletzxvqxgytpgcgvkw.supabase.co/storage/v1/object/public/Collection%20Cover/image/default.png")
   description String?
   user      User     @relation(fields: [userId], references: [id])
   userId    String
@@ -269,9 +282,9 @@ model Collection {
 }
 
 model CollectionContent {
-  collection   Collection  @relation(fields: [collectionId], references: [id])
+  collection   Collection  @relation(fields: [collectionId], references: [id],onDelete: Cascade)
   collectionId String
-  content      Content     @relation(fields: [contentId], references: [id])
+  content      Content     @relation(fields: [contentId], references: [id],onDelete: Cascade)
   contentId    String
 createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

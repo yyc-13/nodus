@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
@@ -10,13 +10,14 @@ import storeFiles from "@/lib/form/storeFiles";
 import { collectionSchema } from "@/lib/utils/yupSchema";
 import FilePond from "@/lib/filePondSetup";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 type formData = yup.InferType<typeof collectionSchema>;
 
-export default function CollectionModal({ open, setOpen }) {
-  const [coverPhoto, setCoverPhoto] = useState();
+export default function CollectionModal({ open, setOpen, mutate }) {
+  const [coverPhoto, setCoverPhoto] = useState([]);
   const [noCoverPhoto, setNoCoverPhoto] = useState(false);
-  const { data: session } = useSession();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -31,8 +32,16 @@ export default function CollectionModal({ open, setOpen }) {
   const filePondRef = useRef();
 
   const onUpdateCoverPhoto = (fileObjs) => {
+    console.log("fileObjs", fileObjs);
     setCoverPhoto(fileObjs.map((fileObj) => fileObj.file));
   };
+
+  useEffect(() => {
+    console.log("cover photo on onupdatecoverphoto", coverPhoto);
+    if (coverPhoto.length > 0) {
+      setNoCoverPhoto(false);
+    }
+  }, [coverPhoto]);
 
   const triggerFilePondSelect = () => {
     if (filePondRef.current) {
@@ -42,10 +51,11 @@ export default function CollectionModal({ open, setOpen }) {
 
   const onSubmit = async (data) => {
     try {
-      if (coverPhoto && coverPhoto.length == 0) {
+      if (coverPhoto.length == 0) {
         setNoCoverPhoto(true);
         return;
       }
+      const toastId = toast.loading("Saving...");
       const coverPhotoIdentifiers = await storeFiles(
         coverPhoto,
         "Collection Cover",
@@ -61,11 +71,14 @@ export default function CollectionModal({ open, setOpen }) {
         body: JSON.stringify(data),
       });
       if (!res.ok) {
+        toast.error("Error while saving.", { id: toastId });
         throw new Error(`HTTP error! status:${res.status}`);
       }
       const result = await res.json();
-
+      toast.success("Saved successfully.", { id: toastId });
       setOpen(false);
+      mutate("/api/collection");
+      router.reload();
     } catch (err) {
       console.error(err);
     }
@@ -97,7 +110,7 @@ export default function CollectionModal({ open, setOpen }) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+              <Dialog.Panel className="lg:ml-52 relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                     <ArchiveBoxIcon
@@ -134,7 +147,7 @@ export default function CollectionModal({ open, setOpen }) {
                                     type="text"
                                     name="collectionName"
                                     id="collectionName"
-                                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                                    className="block flex-1 border-0 bg-transparent py-1.5  px-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                                     title="collectionName"
                                   />
                                 </div>
@@ -253,14 +266,13 @@ export default function CollectionModal({ open, setOpen }) {
                                         PNG, JPG up to 10MB
                                       </p>
                                     </div>
-                                    {noCoverPhoto && (
-                                      <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
-                                        please select a file.
-                                      </p>
-                                    )}
                                   </>
                                 )}
-
+                                {noCoverPhoto && (
+                                  <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
+                                    please select a file.
+                                  </p>
+                                )}
                                 <FilePond
                                   files={coverPhoto}
                                   onupdatefiles={onUpdateCoverPhoto}

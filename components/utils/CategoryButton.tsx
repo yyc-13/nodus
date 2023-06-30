@@ -23,11 +23,7 @@ export default function CategoryButton({
       <h2 className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
         Select {title == "category1" ? "form" : "category"}
       </h2>
-      {errors[title]?.message && (
-        <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
-          {errors[title]?.message}
-        </p>
-      )}
+
       {category.length == 0 && (
         <button
           title="Add a category"
@@ -53,7 +49,17 @@ export default function CategoryButton({
             }}
             className="w-6 h-6 flex items-center justify-center "
           >
-            <XMarkIcon />
+            <XMarkIcon
+              className="   bg-gray-200
+    text-gray-700
+    hover:bg-gray-400
+    hover:text-white
+    transition
+    duration-200
+    ease-in-out
+    rounded-full
+    p-1 h-5 w-5"
+            />
           </button>
           {category && (
             <nav className="flex" aria-label="Breadcrumb">
@@ -86,6 +92,11 @@ export default function CategoryButton({
             </nav>
           )}
         </div>
+      )}
+      {errors[title]?.message && (
+        <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ">
+          {errors[title]?.message}
+        </p>
       )}
       {title == "category1" ? (
         <FormDictionary

@@ -40,6 +40,16 @@ export const authOptions: NextAuthOptions = {
       maxAge: 10 * 60, // Magic links are valid for 10 min only
     }),
   ],
+  callbacks: {
+    async session({ session, user }) {
+      // user object has the entire User model
+      session.user.userName = user.userName;
+      session.user.userId = user.userId;
+      session.user.pfp = user.pfp;
+      session.user.registeredWallet = user.walletAddress;
+      return session;
+    },
+  },
   theme: {
     colorScheme: "auto",
   },
